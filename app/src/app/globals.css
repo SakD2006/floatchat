@@ -101,6 +101,7 @@
 html,
 body {
   font-family: "MontserratAlternates-SemiBold", sans-serif !important;
+  scroll-behavior: smooth;
 }
 
 button {
