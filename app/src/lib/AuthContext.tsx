@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           console.log("[FRONTEND] Cookies:", document.cookie);
         }
 
-        const res = await api.get("/api/auth/me", {
+        const res = await api.get("/api/auth/profile", {
           withCredentials: true,
         });
 

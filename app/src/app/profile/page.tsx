@@ -44,10 +44,8 @@ export default function ProfilePage() {
     setLoggingOut(true);
     try {
       await logout();
-      // Don't need to handle redirect here - AuthContext handles it
     } catch (err) {
       console.error("Logout failed:", err);
-      // AuthContext already handles redirect, but ensure we reset state
       setLoggingOut(false);
     }
   };

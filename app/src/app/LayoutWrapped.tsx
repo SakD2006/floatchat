@@ -15,7 +15,7 @@ export default function LayoutWrapped({
     <html lang="en">
       <body
         className="antialiased relative"
-        style={{ minHeight: "100vh", overflow: "hidden" }}
+        style={{ minHeight: "100vh", overflowX: "hidden" }}
       >
         <div
           style={{
