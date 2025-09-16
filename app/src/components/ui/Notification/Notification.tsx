@@ -83,7 +83,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
       {children}
       {mounted && (
         <motion.div
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col-reverse gap-3 w-[95vw] max-w-[400px] sm:w-96"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-200 flex flex-col-reverse gap-3 w-[95vw] max-w-[400px] sm:w-96"
           initial={false}
           animate="animate"
           exit="exit"
