@@ -22,7 +22,7 @@ const FrameHeading: React.FC<FrameHeadingProps> = ({ text }) => {
           font-semibold
           text-white
           px-4 py-2
-          text-3xl sm:text-4xl md:text-5xl lg:text-6xl
+          text-3xl sm:text-4xl md:text-6xl lg:text-8xl
           leading-tight
           inline-block
         "

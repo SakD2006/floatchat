@@ -1,11 +1,5 @@
-import GetStarted from "@/components/ui/GetStarted/GetStarted";
-import { Heading } from "@/components/ui";
+import Hero from "@/components/Hero/Hero";
 
 export default function Home() {
-  return (
-    <div className="select-none">
-      <Heading text="FloatChat" />
-      <GetStarted />
-    </div>
-  );
+  return <Hero />;
 }
