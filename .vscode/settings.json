@@ -3,6 +3,7 @@
   "cSpell.words": [
     "adduser",
     "appuser",
+    "autorange",
     "Biogeochemical",
     "Buildx",
     "devlabs",
@@ -45,6 +46,8 @@
     "upayanmazumder",
     "uvicorn",
     "venv",
-    "websecure"
+    "websecure",
+    "xaxis",
+    "yaxis"
   ]
 }

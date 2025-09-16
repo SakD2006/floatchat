@@ -1,5 +1,4 @@
-import GetStarted from "@/components/ui/GetStarted/GetStarted";
-import { Heading } from "@/components/ui";
+import { Heading, GetStarted } from "@/components/ui";
 
 export default function Home() {
   return (

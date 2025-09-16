@@ -5,10 +5,7 @@ interface LineProps {
   children?: React.ReactNode;
 }
 
-export const Line: React.FC<LineProps> = ({
-  shadowColor = "#00AC31",
-  children,
-}) => {
+const Line: React.FC<LineProps> = ({ shadowColor = "#00AC31", children }) => {
   return (
     <div className="w-full max-w-[1200px] mx-auto my-6">
       <div
@@ -22,3 +19,5 @@ export const Line: React.FC<LineProps> = ({
     </div>
   );
 };
+
+export default Line;

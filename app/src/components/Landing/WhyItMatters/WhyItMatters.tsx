@@ -1,4 +1,4 @@
-import { Line, SubHeading } from "../../ui";
+import { Line, SubHeading } from "@/components/ui";
 
 export default function WhyItMatters() {
   return (

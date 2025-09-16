@@ -1,4 +1,4 @@
-import Register from "../../../components/Auth/Register/Register";
+import Register from "@/components/Auth/Register/Register";
 import { Heading } from "@/components/ui";
 
 export default function RegisterPage() {
