@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import DotGrid from "@/components/ui/DotGrid/DotGrid";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,15 +26,39 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}
+        style={{ minHeight: "100vh", overflow: "hidden" }}
       >
-        <a href="/auth" style={{ position: "absolute", top: 16, right: 16 }}>
-          Auth
-        </a>
-        <a href="/me" style={{ position: "absolute", top: 16, right: 80 }}>
-          Me
-        </a>
-        {children}
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 0,
+            pointerEvents: "none",
+          }}
+        >
+          <DotGrid
+            baseColor="#878093"
+            activeColor="#000000"
+            dotSize={5}
+            gap={70}
+            proximity={110}
+            shockRadius={200}
+            shockStrength={10}
+            resistance={750}
+            returnDuration={1.5}
+          />
+        </div>
+
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <a href="/auth" style={{ position: "absolute", top: 16, right: 16 }}>
+            Auth
+          </a>
+          <a href="/me" style={{ position: "absolute", top: 16, right: 80 }}>
+            Me
+          </a>
+          {children}
+        </div>
       </body>
     </html>
   );

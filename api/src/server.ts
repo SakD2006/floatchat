@@ -50,7 +50,7 @@ app.use(helmet()); // security headers
 app.use(cors({ origin: config.frontendUrl || "*", credentials: true }));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan("combined")); // request logging
+app.use(morgan("combined"));
 
 // --- Session & Passport ---
 app.use(
