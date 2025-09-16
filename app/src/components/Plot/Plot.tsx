@@ -1,14 +1,9 @@
-//Test file , plots will be added here, as said by Upayan. 
-// Code will be added By ashman post receiving the LLM output.
-// Might require few minor changes like in trajectory, but is working for all the sample responses I tried it for. 
-
 "use client";
 
 import React from "react";
 import dynamic from "next/dynamic";
 import { Data, Layout } from "plotly.js";
 
-// Dynamically import react-plotly.js (disable SSR)
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 interface AxisMeta {
@@ -51,12 +46,14 @@ const PlotComponent: React.FC<PlotProps> = ({ apiResponse }) => {
     const x: (string | number)[] = [];
     const y: (string | number)[] = [];
 
-    data[plot_metadata.x_axis.data_key].forEach((_: string | number, idx: number) => {
-      if (!group_by || data[group_by][idx] === group) {
-        x.push(data[plot_metadata.x_axis.data_key][idx]);
-        y.push(data[plot_metadata.y_axis.data_key][idx]);
+    data[plot_metadata.x_axis.data_key].forEach(
+      (_: string | number, idx: number) => {
+        if (!group_by || data[group_by][idx] === group) {
+          x.push(data[plot_metadata.x_axis.data_key][idx]);
+          y.push(data[plot_metadata.y_axis.data_key][idx]);
+        }
       }
-    });
+    );
 
     return {
       x,
@@ -69,21 +66,21 @@ const PlotComponent: React.FC<PlotProps> = ({ apiResponse }) => {
 
   const layout: Partial<Layout> = {
     title: {
-      text: plot_metadata.title, // <-- Plot Title
+      text: plot_metadata.title,
       font: { size: 18 },
     },
     xaxis: {
       title: {
         text: `${plot_metadata.x_axis.label}${
           plot_metadata.x_axis.units ? ` (${plot_metadata.x_axis.units})` : ""
-        }`, // <-- X Axis Title
+        }`, // X Axis Title
       },
     },
     yaxis: {
       title: {
         text: `${plot_metadata.y_axis.label}${
           plot_metadata.y_axis.units ? ` (${plot_metadata.y_axis.units})` : ""
-        }`, // <-- Y Axis Title
+        }`, // Y Axis Title
       },
       autorange:
         plot_metadata.y_axis.data_key.toLowerCase().includes("pressure") ||
