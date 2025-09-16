@@ -78,6 +78,7 @@ export default function Login() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          color="#00AC31"
         />
         <Input
           type="password"

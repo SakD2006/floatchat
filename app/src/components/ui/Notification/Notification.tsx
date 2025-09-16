@@ -68,13 +68,13 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const iconMap: Record<NotificationType, React.ReactElement> = {
-    success: (
-      <CheckCircle className="text-emerald-400 drop-shadow-lg" size={24} />
+    success: <CheckCircle className="text-chart-2 drop-shadow-lg" size={20} />,
+    error: (
+      <AlertCircle className="text-destructive drop-shadow-lg" size={20} />
     ),
-    error: <AlertCircle className="text-rose-400 drop-shadow-lg" size={24} />,
-    info: <Info className="text-sky-400 drop-shadow-lg" size={24} />,
+    info: <Info className="text-chart-1 drop-shadow-lg" size={20} />,
     warning: (
-      <AlertTriangle className="text-yellow-400 drop-shadow-lg" size={24} />
+      <AlertTriangle className="text-chart-3 drop-shadow-lg" size={20} />
     ),
   };
 
@@ -83,7 +83,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
       {children}
       {mounted && (
         <motion.div
-          className="fixed bottom-2 right-2 sm:bottom-6 sm:right-6 z-50 flex flex-col-reverse gap-2 sm:gap-4 w-[95vw] max-w-[380px] sm:w-96"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col-reverse gap-3 w-[95vw] max-w-[400px] sm:w-96"
           initial={false}
           animate="animate"
           exit="exit"
@@ -94,37 +94,42 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
               <motion.div
                 key={n.id}
                 layout
-                initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                initial={{ opacity: 0, y: 30, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 40, scale: 0.95 }}
+                exit={{ opacity: 0, y: 30, scale: 0.9 }}
                 transition={{
-                  duration: 0.5,
+                  duration: 0.4,
                   type: "spring",
                   stiffness: 300,
-                  damping: 30,
-                  delay: index * 0.08,
+                  damping: 25,
+                  delay: index * 0.05,
                 }}
                 className={clsx(
-                  "relative flex items-center gap-2 sm:gap-3 px-2 sm:px-4 py-1.5 rounded-xl w-full shadow-2xl h-auto bg-[rgba(24,24,27,0.65)] backdrop-blur border border-white/10",
+                  "relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 w-full h-auto font-['MontserratAlternates-Regular']",
+                  "bg-card border border-border rounded-lg shadow-lg",
+                  "backdrop-blur-sm",
                   {
-                    "border-emerald-400/40": n.type === "success",
-                    "border-rose-400/40": n.type === "error",
-                    "border-sky-400/40": n.type === "info",
-                    "border-yellow-400/40": n.type === "warning",
+                    "border-chart-2 bg-chart-2/10": n.type === "success",
+                    "border-destructive bg-destructive/10": n.type === "error",
+                    "border-chart-1 bg-chart-1/10": n.type === "info",
+                    "border-chart-3 bg-chart-3/10": n.type === "warning",
                   }
                 )}
+                style={{
+                  boxShadow: "4px 4px 0px var(--border)",
+                }}
               >
-                <div className="pt-0.5 flex-shrink-0">{iconMap[n.type]}</div>
-                <span className="flex-1 text-sm sm:text-base font-semibold text-[var(--foreground)] drop-shadow-sm">
+                <div className="flex-shrink-0">{iconMap[n.type]}</div>
+                <span className="flex-1 text-sm sm:text-base font-medium text-foreground font-['MontserratAlternates-Regular']">
                   {n.message}
                 </span>
                 <button
                   onClick={() => removeNotification(n.id)}
                   title="Close notification"
                   aria-label="Close notification"
-                  className="ml-1 sm:ml-2 rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-[var(--text-link-color)] hover:bg-[var(--background)]/30 hover:scale-110 transition-all"
+                  className="ml-1 sm:ml-2 rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-ring hover:bg-accent hover:scale-105 transition-all duration-200"
                 >
-                  <X className="w-5 h-5 text-zinc-400 hover:text-white transition-colors" />
+                  <X className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
                 </button>
               </motion.div>
             ))}

@@ -7,6 +7,7 @@ interface InputProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
   required?: boolean;
+  color?: string;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -16,12 +17,14 @@ const Input: React.FC<InputProps> = ({
   onChange,
   className = "",
   required = false,
+  color = "white",
 }) => {
   return (
     <div
       className={`relative bg-[#2B2B2B] border border-white 
-                  shadow-[8px_8px_0px_#00AC31] rounded-[24px] mx-4 my-6 h-12
-                  flex items-center justify-center overflow-clip ${className}`}
+                  rounded-[24px] mx-4 my-6 h-12
+                  flex items-center justify-center overflow-clip font-['MontserratAlternates-Light'] ${className}`}
+      style={{ boxShadow: `8px 8px 0px ${color}` }}
     >
       <input
         type={type}

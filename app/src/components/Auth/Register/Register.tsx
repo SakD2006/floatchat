@@ -83,6 +83,7 @@ export default function Register() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
+          color="#00AC31"
         />
         <Input
           type="text"
@@ -90,6 +91,7 @@ export default function Register() {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
+          color=""
         />
         <Input
           type="email"
@@ -97,6 +99,7 @@ export default function Register() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          color="#00AC31"
         />
         <Input
           type="password"
@@ -104,6 +107,7 @@ export default function Register() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          color="#FFFFFF"
         />
         <button className="mx-auto block" type="submit" disabled={loading}>
           <Image

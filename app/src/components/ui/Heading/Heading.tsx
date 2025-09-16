@@ -26,6 +26,10 @@ const FrameHeading: React.FC<FrameHeadingProps> = ({ text }) => {
           leading-tight
           inline-block
         "
+        style={{
+          WebkitTextStroke: "1px black",
+          WebkitTextFillColor: "white",
+        }}
       >
         {text}
       </span>

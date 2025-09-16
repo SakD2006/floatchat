@@ -107,3 +107,14 @@ body {
 button {
   cursor: pointer;
 }
+
+input,
+form textarea,
+select {
+  font-family: "MontserratAlternates-Light", sans-serif !important;
+  font-size: 1.2em;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
