@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "mcp/**"
+      - ".github/workflows/mcp.yml"
   workflow_dispatch:
 
 permissions:
