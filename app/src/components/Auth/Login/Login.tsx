@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { api } from "@/utils/api";
 import { AxiosError } from "axios";
+import { Input } from "../../ui";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -16,8 +19,11 @@ export default function Login() {
     setError("");
     try {
       await api.post("/api/auth/login", { email, password });
-      // TODO: handle login success (e.g., redirect, store user)
-      // window.location.href = "/me";
+      // Fetch current user to confirm session
+      const { data } = await api.get("/api/auth/me");
+      if (data?.user) {
+        window.location.href = "/me";
+      }
     } catch (err: unknown) {
       if (typeof err === "object" && err !== null && "response" in err) {
         const axiosError = err as AxiosError<{ error?: string }>;
@@ -31,26 +37,39 @@ export default function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <button type="submit" disabled={loading}>
-        {loading ? "Logging in..." : "Login"}
-      </button>
-      {error && <div style={{ color: "red" }}>{error}</div>}
-    </form>
+    <div className="flex flex-col items-center gap-3">
+      <form onSubmit={handleSubmit}>
+        <Input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <Input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button className="mx-auto block" type="submit" disabled={loading}>
+          <Image
+            src="/icons/arrow-right.svg"
+            alt="Arrow Right"
+            width={40}
+            height={40}
+            className="opacity-80 hover:opacity-100 transition-opacity"
+          />
+        </button>
+        {error && <div style={{ color: "red" }}>{error}</div>}
+      </form>
+      <p>
+        Don&apos;t have an account?{" "}
+        <Link href="/auth/register" className="text-blue-500 underline">
+          Register
+        </Link>
+      </p>
+    </div>
   );
 }

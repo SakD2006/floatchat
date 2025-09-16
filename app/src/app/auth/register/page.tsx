@@ -1,5 +1,11 @@
 import Register from "../../../components/Auth/Register/Register";
+import { Heading } from "@/components/ui";
 
 export default function RegisterPage() {
-  return <Register />;
+  return (
+    <div>
+      <Heading text="Register" />
+      <Register />
+    </div>
+  );
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { DotGrid } from "@/components/ui/ui";
+import { DotGrid } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "FloatChat",
@@ -41,13 +41,11 @@ export default function RootLayout({
         </div>
 
         <div style={{ position: "relative", zIndex: 1 }}>
-          <a href="/auth" style={{ position: "absolute", top: 16, right: 16 }}>
-            Auth
-          </a>
-          <a href="/me" style={{ position: "absolute", top: 16, right: 80 }}>
-            Me
-          </a>
-          {children}
+          <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
+            <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+              {children}
+            </main>
+          </div>
         </div>
       </body>
     </html>

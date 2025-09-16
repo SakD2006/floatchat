@@ -25,10 +25,10 @@ export const db = new Pool({
 db.connect()
   .then(async () => {
     console.log("✅ Connected to PostgreSQL");
-    // Create users table if it doesn't exist
     await db.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
         username VARCHAR(50) NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
         password_hash VARCHAR(255) NOT NULL,
@@ -58,7 +58,12 @@ app.use(
     secret: config.sessionSecret,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false }, // set secure: true if using HTTPS
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // true if HTTPS
+      sameSite: "strict",
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+    },
   })
 );
 app.use(passport.initialize());

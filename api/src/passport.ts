@@ -54,9 +54,10 @@ passport.use(
         let user = result.rows[0];
         if (!user) {
           // Create user if doesn't exist
+          // Use displayName for both name and username
           result = await db.query(
-            "INSERT INTO users (email, name, google_id) VALUES ($1, $2, $3) RETURNING *",
-            [email, profile.displayName, profile.id]
+            "INSERT INTO users (name, username, email, password_hash, created_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING *",
+            [profile.displayName, profile.displayName, email, ""]
           );
           user = result.rows[0];
         }

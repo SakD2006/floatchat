@@ -27,8 +27,8 @@ export const loginController = (
 
 // Registration controller
 export const registerController = async (req: Request, res: Response) => {
-  const { username, email, password } = req.body;
-  if (!username || !email || !password) {
+  const { name, username, email, password } = req.body;
+  if (!name || !username || !email || !password) {
     return res.status(400).json({ error: "Missing required fields" });
   }
   try {
@@ -38,13 +38,18 @@ export const registerController = async (req: Request, res: Response) => {
       return res.status(409).json({ error: "Email already registered" });
     }
     // Create user
-    const user = await createUser(username, email, password);
+    const user = await createUser(name, username, email, password);
     if (!user) {
       return res.status(500).json({ error: "User creation failed" });
     }
     res.status(201).json({
       message: "User registered",
-      user: { id: user.id, username: user.username, email: user.email },
+      user: {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+      },
     });
   } catch (err: any) {
     console.error(err);
@@ -67,10 +72,20 @@ export const localLoginController = async (req: Request, res: Response) => {
     if (!valid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-    // Optionally: req.login(user, ...) if using sessions
-    res.json({
-      message: "Login successful",
-      user: { id: user.id, username: user.username, email: user.email },
+    req.login(user, (err: Error | null) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Session error" });
+      }
+      res.json({
+        message: "Login successful",
+        user: {
+          id: user.id,
+          name: user.name,
+          username: user.username,
+          email: user.email,
+        },
+      });
     });
   } catch (err: any) {
     console.error(err);
@@ -102,11 +117,22 @@ export const googleCallbackController = (
 
 export const logoutController = (req: Request, res: Response) => {
   req.logout(() => {
-    res.json({ message: "Logged out" });
+    req.session.destroy((err) => {
+      res.clearCookie("connect.sid", {
+        path: "/",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+      });
+      res.json({ message: "Logged out" });
+    });
   });
 };
 
 export const meController = (req: Request, res: Response) => {
-  if (!req.user) return res.status(401).json({ error: "Not authenticated" });
-  res.json({ user: req.user });
+  if (!req.isAuthenticated || !req.isAuthenticated()) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+  const { id, name, username, email } = req.user as any;
+  res.json({ user: { id, name, username, email } });
 };

@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 
 export interface User {
   id: number;
+  name: string;
   username: string;
   email: string;
   password_hash: string;
@@ -10,15 +11,16 @@ export interface User {
 }
 
 export async function createUser(
+  name: string,
   username: string,
   email: string,
   password: string
 ): Promise<User | null> {
   const password_hash = await bcrypt.hash(password, 10);
   const result = await db.query(
-    `INSERT INTO users (username, email, password_hash, created_at)
-     VALUES ($1, $2, $3, NOW()) RETURNING *`,
-    [username, email, password_hash]
+    `INSERT INTO users (name, username, email, password_hash, created_at)
+     VALUES ($1, $2, $3, $4, NOW()) RETURNING *`,
+    [name, username, email, password_hash]
   );
   return result.rows[0] || null;
 }
