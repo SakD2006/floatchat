@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: floatchat-app
+  namespace: floatchat
+  labels:
+    app: floatchat-app
+  annotations:
+    keel.sh/policy: force
+    keel.sh/trigger: poll
+    keel.sh/match-tag: "true"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: floatchat-app
+  template:
+    metadata:
+      labels:
+        app: floatchat-app
+    spec:
+      containers:
+      - name: floatchat-app
+        image: ghcr.io/sakd2006/floatchat/app:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        envFrom:
+          - secretRef:
+              name: floatchat-app-secrets
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"

@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: floatchat-db
+  namespace: floatchat
+  labels:
+    app: floatchat-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: floatchat-db
+  template:
+    metadata:
+      labels:
+        app: floatchat-db
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: vps
+      containers:
+        - name: postgres
+          image: postgis/postgis:15-3.4
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: floatchat-db-secrets
+          # PGDATA must point to the volume mount path
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "floatchat"]
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          volumeMounts:
+            - name: db-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: floatchat-db-pvc

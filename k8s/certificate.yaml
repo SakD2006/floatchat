@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: floatchat-tls
+  namespace: floatchat
+spec:
+  secretName: floatchat-tls
+  dnsNames:
+    - floatchat.upayan.dev
+    - api.floatchat.upayan.dev
+    - ai.floatchat.upayan.dev
+  issuerRef:
+    name: letsencrypt-http
+    kind: ClusterIssuer

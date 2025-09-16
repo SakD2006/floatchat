@@ -1,0 +1,48 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: floatchat-ingress
+  namespace: floatchat
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: letsencrypt-http
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/redirect-entry-point: websecure
+spec:
+  tls:
+    - hosts:
+        - floatchat.upayan.dev
+        - api.floatchat.upayan.dev
+        - ai.floatchat.upayan.dev
+      secretName: floatchat-tls
+  rules:
+    - host: floatchat.upayan.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: floatchat-app
+                port:
+                  number: 3000
+    - host: api.floatchat.upayan.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: floatchat-api
+                port:
+                  number: 5000
+    - host: ai.floatchat.upayan.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: floatchat-ai
+                port:
+                  number: 8000
