@@ -18,9 +18,28 @@ export default function Login() {
     setLoading(true);
     setError("");
     try {
-      await api.post("/api/auth/login", { email, password });
+      // Fetch CSRF token
+      const csrfRes = await api.get("/api/csrf-token", {
+        withCredentials: true,
+      });
+      const csrfToken = csrfRes.data.csrfToken;
+      await api.post(
+        "/api/auth/login",
+        { email, password },
+        {
+          withCredentials: true,
+          headers: { "x-csrf-token": csrfToken },
+        }
+      );
+      // Log cookies after login
+      if (typeof document !== "undefined") {
+        console.log("[LOGIN] Cookies after login:", document.cookie);
+      }
       // Fetch current user to confirm session
-      const { data } = await api.get("/api/auth/me");
+      if (typeof document !== "undefined") {
+        console.log("[LOGIN] Cookies before /me:", document.cookie);
+      }
+      const { data } = await api.get("/api/auth/me", { withCredentials: true });
       if (data?.user) {
         window.location.href = "/me";
       }

@@ -22,8 +22,27 @@ export default function Register() {
     setError("");
     setSuccess("");
     try {
-      await api.post("/api/auth/register", { name, username, email, password });
-      setSuccess("Registration successful! You can now log in.");
+      // Fetch CSRF token
+      const csrfRes = await api.get("/api/csrf-token", {
+        withCredentials: true,
+      });
+      const csrfToken = csrfRes.data.csrfToken;
+      await api.post(
+        "/api/auth/register",
+        { name, username, email, password },
+        {
+          withCredentials: true,
+          headers: { "x-csrf-token": csrfToken },
+        }
+      );
+      // Fetch current user to confirm session
+      const { data } = await api.get("/api/auth/me", { withCredentials: true });
+      if (data?.user) {
+        setSuccess("Registration successful! You are now logged in.");
+        window.location.href = "/me";
+      } else {
+        setSuccess("Registration successful! You can now log in.");
+      }
     } catch (err: unknown) {
       if (typeof err === "object" && err !== null && "response" in err) {
         const axiosError = err as AxiosError<{ error?: string }>;

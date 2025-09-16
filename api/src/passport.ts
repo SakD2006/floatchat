@@ -9,10 +9,13 @@ passport.serializeUser((user: any, done) => {
 });
 
 passport.deserializeUser(async (id: number, done) => {
+  console.log("[PASSPORT] deserializeUser called with id:", id);
   try {
     const result = await db.query("SELECT * FROM users WHERE id = $1", [id]);
+    console.log("[PASSPORT] DB result:", result.rows);
     done(null, result.rows[0]);
   } catch (err) {
+    console.error("[PASSPORT] deserializeUser error:", err);
     done(err, null);
   }
 });
@@ -27,8 +30,9 @@ passport.use(
         ]);
         const user = result.rows[0];
         if (!user) return done(null, false, { message: "Incorrect email." });
-        // TODO: Use bcrypt to compare password
-        if (user.password !== password)
+        // Use bcrypt to compare password
+        const bcrypt = require("bcrypt");
+        if (!(await bcrypt.compare(password, user.password_hash)))
           return done(null, false, { message: "Incorrect password." });
         return done(null, user);
       } catch (err) {

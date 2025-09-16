@@ -1,9 +1,11 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
+import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import { config } from "./config";
 import session from "express-session";
+import pgSession from "connect-pg-simple";
 import passport from "./passport";
 import { Pool } from "pg";
 import apiRoutes from "./routes";
@@ -47,25 +49,90 @@ const app = express();
 
 // --- Middleware ---
 app.use(helmet()); // security headers
-app.use(cors({ origin: config.frontendUrl || "*", credentials: true }));
+app.use(
+  cors({
+    origin: config.frontendUrl,
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("combined"));
+app.use(cookieParser()); // Required for csurf with cookie option
 
 // --- Session & Passport ---
+app.use((req, res, next) => {
+  // Log incoming cookies and session before session middleware
+  console.log("[SESSION MIDDLEWARE] Incoming cookies:", req.headers.cookie);
+  // Allow /api/csrf-token and /api/auth/register and /api/auth/login without session cookie
+  const publicPaths = [
+    "/api/csrf-token",
+    "/api/auth/register",
+    "/api/auth/login",
+  ];
+  if (publicPaths.includes(req.path)) {
+    return next();
+  }
+  // Only allow connect.sid for authentication on protected endpoints
+  if (req.headers.cookie) {
+    const cookies = req.headers.cookie.split(";").map((c) => c.trim());
+    const connectSid = cookies.find((c) => c.startsWith("connect.sid="));
+    if (!connectSid) {
+      console.warn(
+        "[SESSION MIDDLEWARE] No connect.sid cookie found. Rejecting request."
+      );
+      return res.status(401).json({ error: "Session cookie missing" });
+    }
+    if (cookies.length > 1) {
+      console.warn(
+        "[SESSION MIDDLEWARE] Multiple session cookies found:",
+        cookies
+      );
+    }
+  }
+  next();
+});
+app.use((req, res, next) => {
+  // Log session ID and session data for every request
+  console.log("[SESSION DEBUG] Session ID:", req.sessionID);
+  console.log("[SESSION DEBUG] Session data:", req.session);
+  next();
+});
 app.use(
   session({
+    store: new (pgSession(session))({
+      pool: db,
+      tableName: "session",
+    }),
     secret: config.sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // true if HTTPS
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production" ? true : false, // false for local dev
+      sameSite: "none", // allow cross-site cookies for frontend-backend
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
     },
+    name: "connect.sid",
   })
 );
+// --- CSRF Protection ---
+import csurf from "csurf";
+const csrfProtection = csurf({ cookie: true });
+
+// Only apply CSRF protection to mutating requests
+app.use((req, res, next) => {
+  // Exclude safe methods and CSRF token route
+  if (
+    req.method === "GET" ||
+    req.method === "HEAD" ||
+    req.path === "/api/csrf-token"
+  ) {
+    return next();
+  }
+  return csrfProtection(req, res, next);
+});
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -79,6 +146,11 @@ app.get("/", (req: Request, res: Response) => {
 // Health check route
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "ok", timestamp: new Date() });
+});
+
+// --- Send CSRF token to frontend ---
+app.get("/api/csrf-token", csrfProtection, (req: Request, res: Response) => {
+  res.json({ csrfToken: req.csrfToken() });
 });
 
 // API routes

@@ -74,17 +74,22 @@ export const localLoginController = async (req: Request, res: Response) => {
     }
     req.login(user, (err: Error | null) => {
       if (err) {
-        console.error(err);
+        console.error("Session error:", err);
         return res.status(500).json({ error: "Session error" });
       }
-      res.json({
-        message: "Login successful",
-        user: {
-          id: user.id,
-          name: user.name,
-          username: user.username,
-          email: user.email,
-        },
+      console.log("[LOGIN] Session after login:", req.session);
+      req.session.save(() => {
+        const setCookie = res.getHeader("Set-Cookie");
+        console.log("[LOGIN] Set-Cookie header:", setCookie);
+        res.json({
+          message: "Login successful",
+          user: {
+            id: user.id,
+            name: user.name,
+            username: user.username,
+            email: user.email,
+          },
+        });
       });
     });
   } catch (err: any) {
@@ -130,6 +135,8 @@ export const logoutController = (req: Request, res: Response) => {
 };
 
 export const meController = (req: Request, res: Response) => {
+  console.log("[ME] Session:", req.session);
+  console.log("[ME] User:", req.user);
   if (!req.isAuthenticated || !req.isAuthenticated()) {
     return res.status(401).json({ error: "Not authenticated" });
   }
