@@ -53,7 +53,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center">
         <div className="text-center bg-[#2B2B2B] border border-white rounded-2xl p-8 shadow-[0.5rem_0.5rem_0px_#00AC31,1rem_1rem_0px_#1FF4FF]">
           <div className="w-12 h-12 border-4 border-[#00AC31] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-300 text-lg font-['MontserratAlternates-Regular']">
@@ -66,7 +66,7 @@ export default function ProfilePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center">
         <div className="text-center max-w-md mx-auto bg-[#2B2B2B] border border-red-500 rounded-2xl p-8 shadow-[0.5rem_0.5rem_0px_#FF0000]">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
           <p className="text-red-400 text-lg mb-4 font-['MontserratAlternates-Regular']">
@@ -80,7 +80,7 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
+    <div className="flex items-center justify-center p-6">
       <div className="max-w-4xl w-full">
         <div className="grid gap-8 md:grid-cols-2">
           <div className="bg-[#2B2B2B] border border-white rounded-2xl p-8 shadow-[0.5rem_0.5rem_0px_#00AC31,1rem_1rem_0px_#1FF4FF]">
