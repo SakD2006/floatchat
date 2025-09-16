@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { api } from "@/utils/api";
 import { AxiosError } from "axios";
 import { Input } from "../../ui";
 import { useNotification } from "@/components/ui";
+import { useAuth } from "@/lib/AuthContext";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -13,21 +15,21 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { notify } = useNotification();
+  const { refreshAuth } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const csrfRes = await api.get("/api/csrf-token", {
-        withCredentials: true,
-      });
-      const csrfToken = csrfRes.data.csrfToken;
+      console.log("[LOGIN] Starting login process...");
+
+      // Direct login without CSRF in development
       const loginResponse = await api.post(
         "/api/auth/login",
         { email, password },
         {
           withCredentials: true,
-          headers: { "x-csrf-token": csrfToken },
         }
       );
 
@@ -37,20 +39,26 @@ export default function Login() {
         console.log("[LOGIN] Cookies after login:", document.cookie);
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // Give a moment for cookies to be set
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
-      if (typeof document !== "undefined") {
-        console.log("[LOGIN] Cookies before /profile:", document.cookie);
-      }
-
+      // Verify session
       const { data } = await api.get("/api/auth/profile", {
         withCredentials: true,
       });
 
-      console.log("[LOGIN] /profile response:", data);
+      console.log("[LOGIN] Profile check response:", data);
 
       if (data?.user) {
-        window.location.href = "/profile";
+        notify("Login successful!", "success");
+
+        // Update auth context state
+        await refreshAuth();
+
+        // Use router for navigation to avoid losing session
+        setTimeout(() => {
+          router.push("/profile");
+        }, 500);
       } else {
         notify(
           "Login succeeded but session verification failed. Please try again.",
@@ -58,6 +66,7 @@ export default function Login() {
         );
       }
     } catch (err: unknown) {
+      console.error("[LOGIN] Error:", err);
       if (typeof err === "object" && err !== null && "response" in err) {
         const axiosError = err as AxiosError<{ error?: string }>;
         notify(axiosError.response?.data?.error || "Login failed", "error");

@@ -13,6 +13,7 @@ type AuthContextType = {
   isAuthenticated: boolean;
   setAuthenticated: (auth: boolean) => void;
   logout: () => Promise<void>;
+  refreshAuth: () => Promise<boolean>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -38,40 +39,62 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        // Log cookies for debugging
-        if (typeof document !== "undefined") {
-          console.log("[FRONTEND] Cookies:", document.cookie);
-        }
+  const refreshAuth = async (): Promise<boolean> => {
+    try {
+      console.log("[AUTH_CONTEXT] Refreshing auth state...");
 
-        const res = await api.get("/api/auth/profile", {
-          withCredentials: true,
-        });
-
-        console.log("[FRONTEND] Session check result:", res.data);
-        console.log("[FRONTEND] Response headers:", res.headers);
-
-        setAuthenticated(!!res.data.user);
-      } catch (err) {
-        const error = err as { response?: { status?: number; data?: unknown } };
-        console.log(
-          "[FRONTEND] Session check error:",
-          error.response?.status,
-          error.response?.data
-        );
-        setAuthenticated(false);
+      // Log cookies for debugging
+      if (typeof document !== "undefined") {
+        console.log("[AUTH_CONTEXT] Cookies:", document.cookie);
       }
-    };
 
-    // Small delay to ensure cookies are available
-    const timer = setTimeout(checkSession, 100);
-    return () => clearTimeout(timer);
+      const res = await api.get("/api/auth/profile", {
+        withCredentials: true,
+      });
+
+      console.log("[AUTH_CONTEXT] Session check result:", res.data);
+
+      if (res.data?.user) {
+        setAuthenticated(true);
+        console.log("[AUTH_CONTEXT] User authenticated:", res.data.user.email);
+        return true;
+      } else {
+        setAuthenticated(false);
+        console.log("[AUTH_CONTEXT] No user data in response");
+        return false;
+      }
+    } catch (err) {
+      const error = err as { response?: { status?: number; data?: unknown } };
+      console.log(
+        "[AUTH_CONTEXT] Session check error:",
+        error.response?.status,
+        error.response?.data
+      );
+      setAuthenticated(false);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    // Small delay to ensure cookies are available on initial load
+    const timer = setTimeout(() => {
+      refreshAuth();
+    }, 100);
+
+    // Also check when the window regains focus
+    const handleFocus = () => refreshAuth();
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("focus", handleFocus);
+    };
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setAuthenticated, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, setAuthenticated, logout, refreshAuth }}
+    >
       {children}
     </AuthContext.Provider>
   );

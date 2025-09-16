@@ -23,7 +23,9 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await api.get("/api/auth/me", { withCredentials: true });
+        const res = await api.get("/api/auth/profile", {
+          withCredentials: true,
+        });
         setUser(res.data.user);
         setError(null);
       } catch (err) {

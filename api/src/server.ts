@@ -28,6 +28,8 @@ export const db = new Pool({
 db.connect()
   .then(async () => {
     console.log("✅ Connected to PostgreSQL");
+
+    // Create users table
     await db.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -39,6 +41,31 @@ db.connect()
       );
     `);
     console.log("✅ Ensured users table exists");
+
+    // Create session table for express-session store
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS "session" (
+        "sid" varchar NOT NULL COLLATE "default",
+        "sess" json NOT NULL,
+        "expire" timestamp(6) NOT NULL
+      )
+      WITH (OIDS=FALSE);
+    `);
+
+    await db
+      .query(
+        `
+      ALTER TABLE "session" ADD CONSTRAINT "session_pkey" 
+      PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
+    `
+      )
+      .catch(() => {}); // Ignore error if constraint already exists
+
+    await db.query(`
+      CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");
+    `);
+
+    console.log("✅ Ensured session table exists");
   })
   .catch((err) => {
     console.error("❌ PostgreSQL connection error:", err);
@@ -93,6 +120,7 @@ app.use(
     store: new PgStore({
       pool: db,
       tableName: "session",
+      createTableIfMissing: true,
     }),
     secret: config.sessionSecret,
     resave: false,
@@ -103,7 +131,11 @@ app.use(
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
-      domain: process.env.NODE_ENV === "production" ? ".upayan.dev" : undefined,
+      // Remove domain for localhost development
+      domain:
+        process.env.NODE_ENV === "production"
+          ? process.env.COOKIE_DOMAIN
+          : undefined,
     },
     name: "connect.sid",
   })
@@ -129,12 +161,14 @@ const csrfProtection = csurf({
   },
 });
 
-// Only apply CSRF to mutating requests
+// Only apply CSRF to mutating requests (but skip auth routes during development)
 app.use((req, res, next) => {
   if (
     req.method === "GET" ||
     req.method === "HEAD" ||
-    req.path === "/api/csrf-token"
+    req.path === "/api/csrf-token" ||
+    // Skip CSRF for auth routes in development
+    (process.env.NODE_ENV !== "production" && req.path.startsWith("/api/auth"))
   ) {
     return next();
   }
