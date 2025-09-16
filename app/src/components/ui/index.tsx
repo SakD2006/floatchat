@@ -6,6 +6,7 @@ import Sidebar from "./Sidebar/Sidebar";
 import useNotification, {
   NotificationProvider,
 } from "./Notification/Notification";
+import Card from "./Card/Card";
 
 export {
   Input,
@@ -15,4 +16,5 @@ export {
   Sidebar,
   useNotification,
   NotificationProvider,
+  Card,
 };

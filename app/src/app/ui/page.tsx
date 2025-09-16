@@ -1,6 +1,12 @@
 "use client";
 import Link from "next/link";
-import { Input, GetStarted, Heading, useNotification } from "@/components/ui";
+import {
+  Input,
+  GetStarted,
+  Heading,
+  useNotification,
+  Card,
+} from "@/components/ui";
 
 function Section({ id, children }: { id: string; children?: React.ReactNode }) {
   return (
@@ -76,6 +82,20 @@ export default function UIShowcase() {
             </button>
           ))}
         </div>
+      </Section>
+      <Section id="Card">
+        <Card>
+          <h3 className="text-2xl font-semibold mb-2">Card Title</h3>
+          <p className="text-gray-300">
+            This is a sample card component. You can put any content here.
+          </p>
+        </Card>
+        <Card className="mt-4 bg-gray-800">
+          <h3 className="text-2xl font-semibold mb-2">Another Card</h3>
+          <p className="text-gray-300">
+            Cards can have different styles and content as needed.
+          </p>
+        </Card>
       </Section>
     </div>
   );
