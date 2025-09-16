@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Python virtual environment
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# IDE and OS files
+.vscode/
+.idea/
+*.DS_Store
+
+# Environment variables - IMPORTANT
+.env
+
+# Test scripts
+test_groq.py
+
+# Local data - we will mount this as a volume instead
+data/

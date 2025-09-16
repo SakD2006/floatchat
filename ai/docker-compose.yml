@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # This mounts your local ChromaDB directory into the container.
+      # This is CRITICAL for your vector data to persist.
+      - ./data/chroma_db:/app/data/chroma_db
+    env_file:
+      # This tells Docker Compose to load your secrets and config
+      # from the .env file at runtime.
+      - ./.env

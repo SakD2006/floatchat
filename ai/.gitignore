@@ -1,0 +1,23 @@
+# Environment variables - NEVER COMMIT SECRETS
+.env
+
+# Python virtual environment
+venv/
+.venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE and OS-specific files
+.vscode/
+.idea/
+*.DS_Store
+
+# Local test scripts (optional)
+test_groq.py
+
+# Docker cache (optional)
+.docker/
