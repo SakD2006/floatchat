@@ -42,16 +42,37 @@ export const registerController = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(500).json({ error: "User creation failed" });
     }
-    res.status(201).json({
-      message: "User registered",
-      user: {
-        id: user.id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-      },
+
+    // Auto-login the user after successful registration
+    req.login(user, (err: Error | null) => {
+      if (err) {
+        console.error("Auto-login error after registration:", err);
+        // Return user data even if auto-login fails
+        return res.status(201).json({
+          message: "User registered successfully, but auto-login failed",
+          user: {
+            id: user.id,
+            name: user.name,
+            username: user.username,
+            email: user.email,
+          },
+        });
+      }
+
+      console.log("[REGISTER] Session after registration:", req.session);
+      req.session.save(() => {
+        res.status(201).json({
+          message: "User registered and logged in successfully",
+          user: {
+            id: user.id,
+            name: user.name,
+            username: user.username,
+            email: user.email,
+          },
+        });
+      });
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -121,15 +142,35 @@ export const googleCallbackController = (
 };
 
 export const logoutController = (req: Request, res: Response) => {
-  req.logout(() => {
+  req.logout((err) => {
+    if (err) {
+      console.error("Logout error:", err);
+      return res.status(500).json({ error: "Logout failed" });
+    }
+
     req.session.destroy((err) => {
+      if (err) {
+        console.error("Session destroy error:", err);
+        return res.status(500).json({ error: "Session destroy failed" });
+      }
+
+      // Clear cookies with same settings as session
       res.clearCookie("connect.sid", {
         path: "/",
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       });
-      res.json({ message: "Logged out" });
+
+      // Also clear CSRF cookie if it exists
+      res.clearCookie("_csrf", {
+        path: "/",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      });
+
+      res.json({ message: "Logged out successfully" });
     });
   });
 };

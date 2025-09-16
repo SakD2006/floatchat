@@ -49,12 +49,38 @@ const app = express();
 
 // --- Middleware ---
 app.use(helmet()); // security headers
+
+// Enhanced CORS configuration for cross-origin cookies
 app.use(
   cors({
-    origin: config.frontendUrl,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      const allowedOrigins = [
+        config.frontendUrl,
+        "http://localhost:3000",
+        "https://localhost:3000",
+      ];
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"), false);
+      }
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "x-csrf-token",
+      "Cache-Control",
+    ],
+    exposedHeaders: ["set-cookie"],
   })
 );
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("combined"));
@@ -92,12 +118,7 @@ app.use((req, res, next) => {
   }
   next();
 });
-app.use((req, res, next) => {
-  // Log session ID and session data for every request
-  console.log("[SESSION DEBUG] Session ID:", req.sessionID);
-  console.log("[SESSION DEBUG] Session data:", req.session);
-  next();
-});
+// Configure session with proper cookie settings
 app.use(
   session({
     store: new (pgSession(session))({
@@ -107,18 +128,37 @@ app.use(
     secret: config.sessionSecret,
     resave: false,
     saveUninitialized: false,
+    rolling: true, // Reset expiration on activity
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production" ? true : false, // false for local dev
-      sameSite: "none", // allow cross-site cookies for frontend-backend
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+      domain: process.env.NODE_ENV === "production" ? undefined : undefined, // Let browser handle domain
     },
     name: "connect.sid",
   })
 );
+
+// Session debugging middleware (after session is initialized)
+app.use((req, res, next) => {
+  console.log("[SESSION DEBUG] Session ID:", req.sessionID);
+  console.log("[SESSION DEBUG] Session data:", req.session);
+  console.log(
+    "[SESSION DEBUG] Is authenticated:",
+    req.isAuthenticated ? req.isAuthenticated() : false
+  );
+  next();
+});
 // --- CSRF Protection ---
 import csurf from "csurf";
-const csrfProtection = csurf({ cookie: true });
+const csrfProtection = csurf({
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  },
+});
 
 // Only apply CSRF protection to mutating requests
 app.use((req, res, next) => {

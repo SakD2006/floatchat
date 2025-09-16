@@ -23,7 +23,7 @@ export default function Login() {
         withCredentials: true,
       });
       const csrfToken = csrfRes.data.csrfToken;
-      await api.post(
+      const loginResponse = await api.post(
         "/api/auth/login",
         { email, password },
         {
@@ -31,17 +31,35 @@ export default function Login() {
           headers: { "x-csrf-token": csrfToken },
         }
       );
+
+      console.log("[LOGIN] Login response:", loginResponse.data);
+
       // Log cookies after login
       if (typeof document !== "undefined") {
         console.log("[LOGIN] Cookies after login:", document.cookie);
       }
+
+      // Small delay to ensure cookies are set
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       // Fetch current user to confirm session
       if (typeof document !== "undefined") {
         console.log("[LOGIN] Cookies before /me:", document.cookie);
       }
-      const { data } = await api.get("/api/auth/me", { withCredentials: true });
+
+      const { data } = await api.get("/api/auth/me", {
+        withCredentials: true,
+      });
+
+      console.log("[LOGIN] /me response:", data);
+
       if (data?.user) {
+        // Use window.location to ensure a full page reload and proper session state
         window.location.href = "/me";
+      } else {
+        setError(
+          "Login succeeded but session verification failed. Please try again."
+        );
       }
     } catch (err: unknown) {
       if (typeof err === "object" && err !== null && "response" in err) {

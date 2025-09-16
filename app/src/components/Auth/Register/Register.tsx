@@ -27,7 +27,7 @@ export default function Register() {
         withCredentials: true,
       });
       const csrfToken = csrfRes.data.csrfToken;
-      await api.post(
+      const registerResponse = await api.post(
         "/api/auth/register",
         { name, username, email, password },
         {
@@ -35,13 +35,31 @@ export default function Register() {
           headers: { "x-csrf-token": csrfToken },
         }
       );
-      // Fetch current user to confirm session
-      const { data } = await api.get("/api/auth/me", { withCredentials: true });
-      if (data?.user) {
-        setSuccess("Registration successful! You are now logged in.");
-        window.location.href = "/me";
+
+      console.log("[REGISTER] Registration response:", registerResponse.data);
+
+      // Check if user was auto-logged in during registration
+      if (registerResponse.data.user) {
+        // Verify session with /me endpoint
+        try {
+          const { data } = await api.get("/api/auth/me", {
+            withCredentials: true,
+          });
+          if (data?.user) {
+            setSuccess("Registration successful! You are now logged in.");
+            // Use window.location to ensure a full page reload
+            setTimeout(() => {
+              window.location.href = "/me";
+            }, 1000);
+          } else {
+            setSuccess("Registration successful! Please log in.");
+          }
+        } catch (meError) {
+          console.log("[REGISTER] /me check failed:", meError);
+          setSuccess("Registration successful! Please log in.");
+        }
       } else {
-        setSuccess("Registration successful! You can now log in.");
+        setSuccess("Registration successful! Please log in.");
       }
     } catch (err: unknown) {
       if (typeof err === "object" && err !== null && "response" in err) {
