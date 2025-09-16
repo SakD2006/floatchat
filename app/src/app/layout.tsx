@@ -3,7 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/AuthContext";
 import { NotificationProvider } from "@/components/ui";
 import React from "react";
-import { DotGrid, Sidebar } from "@/components/ui";
+import { DotGrid } from "@/components/ui";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,9 +14,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <NotificationProvider>
       <AuthProvider>
@@ -55,6 +55,7 @@ export default function RootLayout({
 
             <div style={{ position: "relative", zIndex: 1 }}>
               <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+                {/* <Sidebar /> */}
                 {children}
               </main>
             </div>

@@ -9,6 +9,7 @@ import pgSession from "connect-pg-simple";
 import passport from "./passport";
 import { Pool } from "pg";
 import apiRoutes from "./routes";
+import csurf from "csurf";
 
 const PORT = config.port;
 
@@ -47,14 +48,12 @@ db.connect()
 // --- Express app ---
 const app = express();
 
-// --- Middleware ---
-app.use(helmet()); // security headers
-
-// Enhanced CORS configuration for cross-origin cookies
+// --- Security & parsing middleware ---
+app.use(helmet());
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
+      // Allow requests with no origin (like curl/mobile apps)
       if (!origin) return callback(null, true);
 
       const allowedOrigins = [
@@ -84,64 +83,34 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("combined"));
-app.use(cookieParser()); // Required for csurf with cookie option
+app.use(cookieParser());
 
 // --- Session & Passport ---
-app.use((req, res, next) => {
-  // Log incoming cookies and session before session middleware
-  console.log("[SESSION MIDDLEWARE] Incoming cookies:", req.headers.cookie);
-  // Allow /api/csrf-token and /api/auth/register and /api/auth/login without session cookie
-  const publicPaths = [
-    "/api/csrf-token",
-    "/api/auth/register",
-    "/api/auth/login",
-  ];
-  if (publicPaths.includes(req.path)) {
-    return next();
-  }
-  // Only allow connect.sid for authentication on protected endpoints
-  if (req.headers.cookie) {
-    const cookies = req.headers.cookie.split(";").map((c) => c.trim());
-    const connectSid = cookies.find((c) => c.startsWith("connect.sid="));
-    if (!connectSid) {
-      console.warn(
-        "[SESSION MIDDLEWARE] No connect.sid cookie found. Rejecting request."
-      );
-      return res.status(401).json({ error: "Session cookie missing" });
-    }
-    if (cookies.length > 1) {
-      console.warn(
-        "[SESSION MIDDLEWARE] Multiple session cookies found:",
-        cookies
-      );
-    }
-  }
-  next();
-});
-// Configure session with proper cookie settings
+const PgStore = pgSession(session);
+
 app.use(
   session({
-    store: new (pgSession(session))({
+    store: new PgStore({
       pool: db,
       tableName: "session",
     }),
     secret: config.sessionSecret,
     resave: false,
     saveUninitialized: false,
-    rolling: true, // Reset expiration on activity
+    rolling: true, // reset expiration on activity
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
-      domain: process.env.NODE_ENV === "production" ? undefined : undefined, // Let browser handle domain
+      domain: process.env.NODE_ENV === "production" ? ".upayan.dev" : undefined,
     },
     name: "connect.sid",
   })
 );
 
-// Session debugging middleware (after session is initialized)
-app.use((req, res, next) => {
+// --- Debug session middleware ---
+app.use((req, _res, next) => {
   console.log("[SESSION DEBUG] Session ID:", req.sessionID);
   console.log("[SESSION DEBUG] Session data:", req.session);
   console.log(
@@ -150,8 +119,8 @@ app.use((req, res, next) => {
   );
   next();
 });
+
 // --- CSRF Protection ---
-import csurf from "csurf";
 const csrfProtection = csurf({
   cookie: {
     httpOnly: true,
@@ -160,9 +129,8 @@ const csrfProtection = csurf({
   },
 });
 
-// Only apply CSRF protection to mutating requests
+// Only apply CSRF to mutating requests
 app.use((req, res, next) => {
-  // Exclude safe methods and CSRF token route
   if (
     req.method === "GET" ||
     req.method === "HEAD" ||
@@ -177,32 +145,27 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // --- Routes ---
-
-// Default root route
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({ message: "Welcome to FloatChat API!", status: "ok" });
 });
 
-// Health check route
-app.get("/health", (req: Request, res: Response) => {
+app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({ status: "ok", timestamp: new Date() });
 });
 
-// --- Send CSRF token to frontend ---
 app.get("/api/csrf-token", csrfProtection, (req: Request, res: Response) => {
   res.json({ csrfToken: req.csrfToken() });
 });
 
-// API routes
 app.use("/api", apiRoutes);
 
 // --- 404 handler ---
-app.use((req: Request, res: Response) => {
+app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: "Not Found" });
 });
 
 // --- Error handler ---
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
     error: err.message || "Internal Server Error",
