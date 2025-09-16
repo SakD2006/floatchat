@@ -60,7 +60,18 @@ export const registerController = async (req: Request, res: Response) => {
       }
 
       console.log("[REGISTER] Session after registration:", req.session);
-      req.session.save(() => {
+      console.log("[REGISTER] Session ID:", req.sessionID);
+
+      req.session.save((saveErr) => {
+        if (saveErr) {
+          console.error("[REGISTER] Session save error:", saveErr);
+        }
+
+        console.log(
+          "[REGISTER] Set-Cookie header:",
+          res.getHeader("Set-Cookie")
+        );
+
         res.status(201).json({
           message: "User registered and logged in successfully",
           user: {
@@ -101,10 +112,24 @@ export const localLoginController = async (req: Request, res: Response) => {
       console.log("[LOGIN] Session after login:", req.session);
       console.log("[LOGIN] Request origin:", req.get("Origin"));
       console.log("[LOGIN] Session ID:", req.sessionID);
-      req.session.save(() => {
+
+      req.session.save((saveErr) => {
+        if (saveErr) {
+          console.error("[LOGIN] Session save error:", saveErr);
+        }
+
         const setCookie = res.getHeader("Set-Cookie");
         console.log("[LOGIN] Set-Cookie header:", setCookie);
         console.log("[LOGIN] All response headers:", res.getHeaders());
+        console.log("[LOGIN] Cookie settings:", {
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+          domain:
+            process.env.NODE_ENV === "production"
+              ? process.env.COOKIE_DOMAIN || ".upayan.dev"
+              : undefined,
+        });
+
         res.json({
           message: "Login successful",
           user: {

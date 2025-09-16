@@ -45,7 +45,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       // Log cookies for debugging
       if (typeof document !== "undefined") {
-        console.log("[AUTH_CONTEXT] Cookies:", document.cookie);
+        console.log("[AUTH_CONTEXT] All cookies:", document.cookie);
+        const cookies = document.cookie.split(";").map((c) => c.trim());
+        console.log("[AUTH_CONTEXT] Cookie list:", cookies);
+        const sessionCookie = cookies.find((c) => c.startsWith("connect.sid="));
+        console.log("[AUTH_CONTEXT] Session cookie found:", !!sessionCookie);
+        if (sessionCookie) {
+          console.log("[AUTH_CONTEXT] Session cookie value:", sessionCookie);
+        }
       }
 
       const res = await api.get("/api/auth/profile", {

@@ -75,6 +75,11 @@ db.connect()
 // --- Express app ---
 const app = express();
 
+// Trust proxy in production (important for cookies and HTTPS)
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
 // --- Security & parsing middleware ---
 app.use(helmet());
 app.use(
@@ -107,6 +112,9 @@ app.use(
       "Cache-Control",
     ],
     exposedHeaders: ["set-cookie"],
+    // Add these for production compatibility
+    preflightContinue: false,
+    optionsSuccessStatus: 200,
   })
 );
 
@@ -141,6 +149,8 @@ app.use(
           : undefined,
     },
     name: "connect.sid",
+    // Trust proxy in production for proper cookie handling
+    proxy: process.env.NODE_ENV === "production",
   })
 );
 
