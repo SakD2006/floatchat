@@ -38,15 +38,15 @@ export default function RootLayout({
           }}
         >
           <DotGrid
-            baseColor="#878093"
-            activeColor="#000000"
-            dotSize={5}
-            gap={70}
-            proximity={110}
-            shockRadius={200}
-            shockStrength={10}
+            dotSize={4}
+            gap={23}
+            baseColor={"#403F3F"}
+            activeColor={"#00AC31"}
+            proximity={120}
+            shockRadius={90}
+            shockStrength={16}
             resistance={750}
-            returnDuration={1.5}
+            returnDuration={2.1}
           />
         </div>
 
