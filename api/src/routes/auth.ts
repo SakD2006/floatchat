@@ -28,6 +28,6 @@ router.get("/google/callback", googleCallbackController);
 router.post("/logout", logoutController);
 
 // Get current user
-router.get("/me", meController);
+router.get("/profile", meController);
 
 export default router;
