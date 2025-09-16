@@ -1,0 +1,8 @@
+numpy
+psycopg2
+chromadb
+tqdm
+sentence_transformers
+netCDF4
+requests
+bs4
