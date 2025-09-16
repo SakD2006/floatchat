@@ -1,6 +1,19 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@font-face {
+  font-family: "MontserratAlternates-Light";
+  src: url("/fonts/MontserratAlternates-Light.ttf") format("truetype");
+}
+@font-face {
+  font-family: "MontserratAlternates-Regular";
+  src: url("/fonts/MontserratAlternates-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "MontserratAlternates-SemiBold";
+  src: url("/fonts/MontserratAlternates-SemiBold.ttf") format("truetype");
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -83,4 +96,13 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+html,
+body {
+  font-family: "MontserratAlternates-SemiBold", sans-serif !important;
+}
+
+button {
+  cursor: pointer;
 }
