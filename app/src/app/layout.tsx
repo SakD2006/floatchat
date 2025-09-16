@@ -23,7 +23,14 @@ export default function RootLayout({
         <html lang="en">
           <body
             className="antialiased relative"
-            style={{ minHeight: "100vh", overflowX: "hidden" }}
+            style={{
+              minHeight: "100vh",
+              overflowX: "hidden",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
             <div
               style={{
@@ -47,7 +54,6 @@ export default function RootLayout({
             </div>
 
             <div style={{ position: "relative", zIndex: 1 }}>
-              <Sidebar />
               <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
                 {children}
               </main>
