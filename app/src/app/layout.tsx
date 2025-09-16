@@ -27,8 +27,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <a href="/login" style={{ position: "absolute", top: 16, right: 16 }}>
-          Login
+        <a href="/auth" style={{ position: "absolute", top: 16, right: 16 }}>
+          Auth
         </a>
         <a href="/me" style={{ position: "absolute", top: 16, right: 80 }}>
           Me

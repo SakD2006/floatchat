@@ -12,6 +12,7 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
@@ -26,6 +27,7 @@
     "ts-node": "^10.9.2"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/express-session": "^1.18.2",

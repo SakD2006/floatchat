@@ -23,7 +23,20 @@ export const db = new Pool({
 });
 
 db.connect()
-  .then(() => console.log("✅ Connected to PostgreSQL"))
+  .then(async () => {
+    console.log("✅ Connected to PostgreSQL");
+    // Create users table if it doesn't exist
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(50) NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+    console.log("✅ Ensured users table exists");
+  })
   .catch((err) => {
     console.error("❌ PostgreSQL connection error:", err);
     process.exit(1);

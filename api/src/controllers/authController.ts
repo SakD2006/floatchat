@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import passport from "passport";
 import { config } from "../config";
+import { createUser, findUserByEmail, validatePassword } from "../models/user";
 
 export const loginController = (
   req: Request,
@@ -22,6 +23,59 @@ export const loginController = (
       });
     }
   )(req, res, next);
+};
+
+// Registration controller
+export const registerController = async (req: Request, res: Response) => {
+  const { username, email, password } = req.body;
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+  try {
+    // Check if user exists
+    const existing = await findUserByEmail(email);
+    if (existing) {
+      return res.status(409).json({ error: "Email already registered" });
+    }
+    // Create user
+    const user = await createUser(username, email, password);
+    if (!user) {
+      return res.status(500).json({ error: "User creation failed" });
+    }
+    res.status(201).json({
+      message: "User registered",
+      user: { id: user.id, username: user.username, email: user.email },
+    });
+  } catch (err: any) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Login controller (local)
+export const localLoginController = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ error: "Missing email or password" });
+  }
+  try {
+    const user = await findUserByEmail(email);
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+    const valid = await validatePassword(user, password);
+    if (!valid) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+    // Optionally: req.login(user, ...) if using sessions
+    res.json({
+      message: "Login successful",
+      user: { id: user.id, username: user.username, email: user.email },
+    });
+  } catch (err: any) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 export const googleCallbackController = (

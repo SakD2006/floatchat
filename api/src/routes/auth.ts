@@ -5,12 +5,17 @@ import {
   googleCallbackController,
   logoutController,
   meController,
+  registerController,
+  localLoginController,
 } from "../controllers/authController";
 
 const router = Router();
 
-// Local login
-router.post("/login", loginController);
+// Registration
+router.post("/register", registerController);
+
+// Local login (custom)
+router.post("/login", localLoginController);
 
 // Google OAuth2
 router.get(
