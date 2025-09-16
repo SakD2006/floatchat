@@ -19,35 +19,37 @@ const TEXTS = [
 
 const FeatureFrame: React.FC = () => {
   return (
-    <Card className="min-w-[70vw] mx-auto p-8">
-      <SubHeading text="Key Features" />
+    <div className="min-h-screen flex flex-col justify-center items-center px-4">
+      <Card className="min-w-[70vw] mx-auto p-8">
+        <SubHeading text="Key Features" />
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 w-full mt-6">
-        {ICONS.map((icon, i) => (
-          <div
-            key={i}
-            className="relative w-full aspect-square flex items-center justify-center"
-          >
-            <Image
-              src={icon.src}
-              alt={icon.alt}
-              className="w-2/4 h-2/4 object-contain"
-              width={100}
-              height={150}
-              draggable={false}
-            />
-          </div>
-        ))}
-      </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 w-full mt-6">
+          {ICONS.map((icon, i) => (
+            <div
+              key={i}
+              className="relative w-full aspect-square flex items-center justify-center"
+            >
+              <Image
+                src={icon.src}
+                alt={icon.alt}
+                className="w-2/4 h-2/4 object-contain"
+                width={100}
+                height={150}
+                draggable={false}
+              />
+            </div>
+          ))}
+        </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-6 text-center text-white">
-        {TEXTS.map((text, i) => (
-          <p key={i} className="text-sm sm:text-base md:text-lg font-medium">
-            {text}
-          </p>
-        ))}
-      </div>
-    </Card>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-6 text-center text-white">
+          {TEXTS.map((text, i) => (
+            <p key={i} className="text-sm sm:text-base md:text-lg font-medium">
+              {text}
+            </p>
+          ))}
+        </div>
+      </Card>
+    </div>
   );
 };
 

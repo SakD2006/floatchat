@@ -3,7 +3,7 @@ import { SubHeading } from "@/components/ui";
 
 export default function WhatDoesFloatChatDo() {
   return (
-    <Card className="max-w-7xl mx-auto p-8">
+    <Card className="min-w-fit my-20 mx-auto p-8">
       <SubHeading text="What Does FloatChat Do?" />
 
       <ul>
