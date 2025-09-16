@@ -87,11 +87,14 @@ app.use(
         config.frontendUrl,
         "http://localhost:3000",
         "https://localhost:3000",
+        "https://floatchat.upayan.dev", // Production frontend
+        "https://www.floatchat.upayan.dev", // Production frontend with www
       ];
 
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
+        console.log("[CORS] Blocked origin:", origin);
         callback(new Error("Not allowed by CORS"), false);
       }
     },
@@ -131,10 +134,10 @@ app.use(
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
-      // Remove domain for localhost development
+      // Set domain for cross-subdomain cookies in production
       domain:
         process.env.NODE_ENV === "production"
-          ? process.env.COOKIE_DOMAIN
+          ? process.env.COOKIE_DOMAIN || ".upayan.dev"
           : undefined,
     },
     name: "connect.sid",

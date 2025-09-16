@@ -99,9 +99,12 @@ export const localLoginController = async (req: Request, res: Response) => {
         return res.status(500).json({ error: "Session error" });
       }
       console.log("[LOGIN] Session after login:", req.session);
+      console.log("[LOGIN] Request origin:", req.get("Origin"));
+      console.log("[LOGIN] Session ID:", req.sessionID);
       req.session.save(() => {
         const setCookie = res.getHeader("Set-Cookie");
         console.log("[LOGIN] Set-Cookie header:", setCookie);
+        console.log("[LOGIN] All response headers:", res.getHeaders());
         res.json({
           message: "Login successful",
           user: {
@@ -160,6 +163,10 @@ export const logoutController = (req: Request, res: Response) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        domain:
+          process.env.NODE_ENV === "production"
+            ? process.env.COOKIE_DOMAIN || ".upayan.dev"
+            : undefined,
       });
 
       // Also clear CSRF cookie if it exists
@@ -168,6 +175,10 @@ export const logoutController = (req: Request, res: Response) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        domain:
+          process.env.NODE_ENV === "production"
+            ? process.env.COOKIE_DOMAIN || ".upayan.dev"
+            : undefined,
       });
 
       res.json({ message: "Logged out successfully" });
@@ -177,8 +188,13 @@ export const logoutController = (req: Request, res: Response) => {
 
 export const meController = (req: Request, res: Response) => {
   console.log("[ME] Session:", req.session);
+  console.log("[ME] Session ID:", req.sessionID);
   console.log("[ME] User:", req.user);
+  console.log("[ME] Request origin:", req.get("Origin"));
+  console.log("[ME] Request cookies:", req.cookies);
+  console.log("[ME] Raw cookie header:", req.get("Cookie"));
   if (!req.isAuthenticated || !req.isAuthenticated()) {
+    console.log("[ME] Authentication failed - not authenticated");
     return res.status(401).json({ error: "Not authenticated" });
   }
   const { id, name, username, email } = req.user as any;
