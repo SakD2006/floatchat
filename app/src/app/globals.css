@@ -104,6 +104,14 @@ body {
   scroll-behavior: smooth;
 }
 
+main {
+  flex: 1;
+  min-height: 90vh;
+  width: 100%;
+  max-width: 100%;
+  justify-content: center;
+}
+
 button {
   cursor: pointer;
 }
