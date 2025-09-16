@@ -53,10 +53,10 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground text-lg">
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center bg-[#2B2B2B] border border-white rounded-2xl p-8 shadow-[0.5rem_0.5rem_0px_#00AC31,1rem_1rem_0px_#1FF4FF]">
+          <div className="w-12 h-12 border-4 border-[#00AC31] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-300 text-lg font-['MontserratAlternates-Regular']">
             Loading your profile...
           </p>
         </div>
@@ -66,10 +66,12 @@ export default function ProfilePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto">
-          <div className="text-destructive text-6xl mb-4">⚠️</div>
-          <p className="text-destructive text-lg mb-4">{error}</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto bg-[#2B2B2B] border border-red-500 rounded-2xl p-8 shadow-[0.5rem_0.5rem_0px_#FF0000]">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <p className="text-red-400 text-lg mb-4 font-['MontserratAlternates-Regular']">
+            {error}
+          </p>
         </div>
       </div>
     );
@@ -78,52 +80,60 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-4xl mx-auto px-6 py-12">
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="max-w-4xl w-full">
         <div className="grid gap-8 md:grid-cols-2">
-          <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
+          <div className="bg-[#2B2B2B] border border-white rounded-2xl p-8 shadow-[0.5rem_0.5rem_0px_#00AC31,1rem_1rem_0px_#1FF4FF]">
             <div className="text-center mb-8">
-              <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl font-bold text-primary">
+              <div className="w-24 h-24 bg-[#00AC31]/20 border border-[#00AC31] rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl font-bold text-[#00AC31]">
                   {user.name
                     ? user.name.charAt(0).toUpperCase()
                     : user.email.charAt(0).toUpperCase()}
                 </span>
               </div>
 
-              <h2 className="text-2xl font-bold text-foreground mb-2">
+              <h2 className="text-2xl font-bold text-white mb-2 font-['MontserratAlternates-SemiBold']">
                 {user.name || "Anonymous User"}
               </h2>
               {user.username && (
-                <p className="text-muted-foreground text-lg">
+                <p className="text-gray-300 text-lg font-['MontserratAlternates-Regular']">
                   @{user.username}
                 </p>
               )}
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                <div className="w-2 h-2 bg-primary rounded-full"></div>
+              <div className="flex items-center gap-3 p-4 bg-[#1F1F1F] border border-[#403F3F] rounded-xl">
+                <div className="w-3 h-3 bg-[#00AC31] rounded-full shadow-sm"></div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Email</p>
-                  <p className="text-foreground font-medium">{user.email}</p>
+                  <p className="text-sm text-gray-400 font-['MontserratAlternates-Light']">
+                    Email
+                  </p>
+                  <p className="text-white font-medium font-['MontserratAlternates-Regular']">
+                    {user.email}
+                  </p>
                 </div>
               </div>
 
               {user.id && (
-                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                <div className="flex items-center gap-3 p-4 bg-[#1F1F1F] border border-[#403F3F] rounded-xl">
+                  <div className="w-3 h-3 bg-[#1FF4FF] rounded-full shadow-sm"></div>
                   <div>
-                    <p className="text-sm text-muted-foreground">User ID</p>
-                    <p className="text-foreground font-medium">#{user.id}</p>
+                    <p className="text-sm text-gray-400 font-['MontserratAlternates-Light']">
+                      User ID
+                    </p>
+                    <p className="text-white font-medium font-['MontserratAlternates-Regular']">
+                      #{user.id}
+                    </p>
                   </div>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
-            <h3 className="text-xl font-bold text-foreground mb-6">
+          <div className="bg-[#2B2B2B] border border-white rounded-2xl p-8 shadow-[0.5rem_0.5rem_0px_#00AC31,1rem_1rem_0px_#1FF4FF]">
+            <h3 className="text-xl font-bold text-white mb-6 font-['MontserratAlternates-SemiBold']">
               Account Actions
             </h3>
 
@@ -131,15 +141,16 @@ export default function ProfilePage() {
               <button
                 onClick={handleLogout}
                 disabled={loggingOut}
-                className="w-full bg-destructive hover:bg-destructive/90 disabled:bg-destructive/50 
-                          text-destructive-foreground font-semibold py-4 px-6 rounded-xl
+                className="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-600/50 
+                          text-white font-semibold py-4 px-6 rounded-xl border border-red-500
                           transition-all duration-200 transform hover:scale-105 disabled:scale-100
-                          shadow-lg hover:shadow-xl disabled:cursor-not-allowed
+                          shadow-[0.25rem_0.25rem_0px_#FF0000] hover:shadow-[0.5rem_0.5rem_0px_#FF0000] 
+                          disabled:cursor-not-allowed font-['MontserratAlternates-SemiBold']
                           flex items-center justify-center gap-3"
               >
                 {loggingOut ? (
                   <>
-                    <div className="w-5 h-5 border-2 border-destructive-foreground border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     Logging out...
                   </>
                 ) : (
@@ -152,10 +163,11 @@ export default function ProfilePage() {
 
               <button
                 onClick={() => (window.location.href = "/")}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground 
-                          font-semibold py-4 px-6 rounded-xl
+                className="w-full bg-[#00AC31] hover:bg-[#00AC31]/90 text-white 
+                          font-semibold py-4 px-6 rounded-xl border border-[#00AC31]
                           transition-all duration-200 transform hover:scale-105
-                          shadow-lg hover:shadow-xl
+                          shadow-[0.25rem_0.25rem_0px_#1FF4FF] hover:shadow-[0.5rem_0.5rem_0px_#1FF4FF]
+                          font-['MontserratAlternates-SemiBold']
                           flex items-center justify-center gap-3"
               >
                 <span className="text-lg">🏠</span>

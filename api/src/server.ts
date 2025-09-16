@@ -161,14 +161,13 @@ const csrfProtection = csurf({
   },
 });
 
-// Only apply CSRF to mutating requests (but skip auth routes during development)
+// Only apply CSRF to mutating requests (but skip auth routes)
 app.use((req, res, next) => {
   if (
     req.method === "GET" ||
     req.method === "HEAD" ||
     req.path === "/api/csrf-token" ||
-    // Skip CSRF for auth routes in development
-    (process.env.NODE_ENV !== "production" && req.path.startsWith("/api/auth"))
+    req.path.startsWith("/api/auth")
   ) {
     return next();
   }
