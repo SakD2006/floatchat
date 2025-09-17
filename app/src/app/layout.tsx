@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/AuthContext";
 import { ChatProvider } from "@/lib/ChatContext";
+import { SidebarProvider } from "@/lib/SidebarContext";
 import {
   NotificationProvider,
   DotGrid,
   Footer,
-  Sidebar,
+  LayoutWrapper,
 } from "@/components/ui";
 import React from "react";
 import "./globals.css";
@@ -26,47 +27,42 @@ export default function RootLayout({
     <NotificationProvider>
       <AuthProvider>
         <ChatProvider>
-          <html lang="en">
-            <body
-              className="antialiased relative"
-              style={{
-                minHeight: "100vh",
-                overflowX: "hidden",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <div
+          <SidebarProvider>
+            <html lang="en">
+              <body
+                className="antialiased relative"
                 style={{
-                  position: "fixed",
-                  inset: 0,
-                  zIndex: 0,
-                  pointerEvents: "none",
+                  minHeight: "100vh",
+                  overflowX: "hidden",
                 }}
               >
-                <DotGrid
-                  dotSize={4}
-                  gap={23}
-                  baseColor={"#403F3F"}
-                  activeColor={"#00AC31"}
-                  proximity={120}
-                  shockRadius={90}
-                  shockStrength={16}
-                  resistance={750}
-                  returnDuration={2.1}
-                />
-              </div>
-              <div style={{ position: "relative", zIndex: 1 }}>
-                <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-                  <Sidebar />
-                  {children}
-                </main>
-              </div>{" "}
-              <Footer />
-            </body>
-          </html>
+                <div
+                  style={{
+                    position: "fixed",
+                    inset: 0,
+                    zIndex: 0,
+                    pointerEvents: "none",
+                  }}
+                >
+                  <DotGrid
+                    dotSize={4}
+                    gap={23}
+                    baseColor={"#403F3F"}
+                    activeColor={"#00AC31"}
+                    proximity={120}
+                    shockRadius={90}
+                    shockStrength={16}
+                    resistance={750}
+                    returnDuration={2.1}
+                  />
+                </div>
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  <LayoutWrapper>{children}</LayoutWrapper>
+                </div>
+                <Footer />
+              </body>
+            </html>
+          </SidebarProvider>
         </ChatProvider>
       </AuthProvider>
     </NotificationProvider>

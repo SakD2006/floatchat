@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { FiLogOut, FiMenu } from "react-icons/fi";
 import { useAuth } from "@/lib/AuthContext";
+import { useSidebar } from "@/lib/SidebarContext";
 
 function LogoutButton({ collapsed }: { collapsed: boolean }) {
   const { logout, isAuthenticated } = useAuth();
@@ -30,8 +31,7 @@ function LogoutButton({ collapsed }: { collapsed: boolean }) {
 }
 
 export default function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const { collapsed, setCollapsed, mobileOpen, setMobileOpen } = useSidebar();
 
   const menu = [
     { id: "resize", label: "Resize", src: "/icons/mynaui_sidebar.svg" },
@@ -53,7 +53,7 @@ export default function Sidebar() {
         <div className="flex items-center gap-3">
           <button
             aria-label="toggle sidebar"
-            onClick={() => setMobileOpen((s) => !s)}
+            onClick={() => setMobileOpen(!mobileOpen)}
             className="p-2 rounded-md focus:outline-none"
           >
             <FiMenu size={20} />
@@ -90,7 +90,7 @@ export default function Sidebar() {
                 <li key={m.id}>
                   {m.id === "resize" ? (
                     <button
-                      onClick={() => setCollapsed((c) => !c)}
+                      onClick={() => setCollapsed(!collapsed)}
                       className={`w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150 hover:bg-white/5 text-white/90 ${
                         collapsed ? "justify-center" : "justify-start"
                       }`}
@@ -129,15 +129,6 @@ export default function Sidebar() {
           </div>
         </div>
       </aside>
-
-      {mobileOpen && (
-        <div
-          onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 z-30 bg-black/40 md:hidden"
-        />
-      )}
-
-      <div className={`hidden md:block ${collapsed ? "w-20" : "w-64"}`} />
     </>
   );
 }

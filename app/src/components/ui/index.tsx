@@ -12,6 +12,7 @@ import Card from "./Card/Card";
 import Line from "./Line/Line";
 import Loader from "./Loader/Loader";
 import LoaderContainer from "./Loader/Loader";
+import LayoutWrapper from "./LayoutWrapper/LayoutWrapper";
 
 export {
   Input,
@@ -27,4 +28,5 @@ export {
   NotificationProvider,
   Loader,
   LoaderContainer,
+  LayoutWrapper,
 };
