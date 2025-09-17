@@ -3,6 +3,31 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { FiLogOut, FiMenu } from "react-icons/fi";
+import { useAuth } from "@/lib/AuthContext";
+
+function LogoutButton({ collapsed }: { collapsed: boolean }) {
+  const { logout, isAuthenticated } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  if (!isAuthenticated) return null;
+
+  return (
+    <button
+      onClick={handleLogout}
+      className={`flex items-center gap-2 text-sm w-full rounded-md px-3 py-2 hover:bg-white/5 text-white/90`}
+    >
+      <FiLogOut size={16} />
+      {!collapsed && <span>Logout</span>}
+    </button>
+  );
+}
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -99,12 +124,7 @@ export default function Sidebar() {
                 collapsed ? "flex-col" : ""
               }`}
             >
-              <button
-                className={`flex items-center gap-2 text-sm w-full rounded-md px-3 py-2 hover:bg-white/5 text-white/90`}
-              >
-                <FiLogOut size={16} />
-                {!collapsed && <span>Logout</span>}
-              </button>
+              <LogoutButton collapsed={collapsed} />
             </div>
           </div>
         </div>

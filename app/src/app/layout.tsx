@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/AuthContext";
+import { ChatProvider } from "@/lib/ChatContext";
 import {
   NotificationProvider,
   DotGrid,
@@ -24,47 +25,49 @@ export default function RootLayout({
   return (
     <NotificationProvider>
       <AuthProvider>
-        <html lang="en">
-          <body
-            className="antialiased relative"
-            style={{
-              minHeight: "100vh",
-              overflowX: "hidden",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <div
+        <ChatProvider>
+          <html lang="en">
+            <body
+              className="antialiased relative"
               style={{
-                position: "fixed",
-                inset: 0,
-                zIndex: 0,
-                pointerEvents: "none",
+                minHeight: "100vh",
+                overflowX: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <DotGrid
-                dotSize={4}
-                gap={23}
-                baseColor={"#403F3F"}
-                activeColor={"#00AC31"}
-                proximity={120}
-                shockRadius={90}
-                shockStrength={16}
-                resistance={750}
-                returnDuration={2.1}
-              />
-            </div>
-            <div style={{ position: "relative", zIndex: 1 }}>
-              <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-                <Sidebar />
-                {children}
-              </main>
-            </div>{" "}
-            <Footer />
-          </body>
-        </html>
+              <div
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  zIndex: 0,
+                  pointerEvents: "none",
+                }}
+              >
+                <DotGrid
+                  dotSize={4}
+                  gap={23}
+                  baseColor={"#403F3F"}
+                  activeColor={"#00AC31"}
+                  proximity={120}
+                  shockRadius={90}
+                  shockStrength={16}
+                  resistance={750}
+                  returnDuration={2.1}
+                />
+              </div>
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+                  <Sidebar />
+                  {children}
+                </main>
+              </div>{" "}
+              <Footer />
+            </body>
+          </html>
+        </ChatProvider>
       </AuthProvider>
     </NotificationProvider>
   );
