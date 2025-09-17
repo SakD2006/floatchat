@@ -5,6 +5,7 @@ import Image from "next/image";
 import { FiLogOut, FiMenu } from "react-icons/fi";
 import { useAuth } from "@/lib/AuthContext";
 import { useSidebar } from "@/lib/SidebarContext";
+import { SidebarSessionInfo } from "@/components/ui";
 
 function LogoutButton({ collapsed }: { collapsed: boolean }) {
   const { logout, isAuthenticated } = useAuth();
@@ -117,6 +118,11 @@ export default function Sidebar() {
               ))}
             </ul>
           </nav>
+
+          {/* Session Info Section */}
+          <div className="px-4 py-2">
+            <SidebarSessionInfo collapsed={collapsed} />
+          </div>
 
           <div className="p-4 border-t border-[#403F3F]">
             <div

@@ -13,6 +13,7 @@ import Line from "./Line/Line";
 import Loader from "./Loader/Loader";
 import LoaderContainer from "./Loader/Loader";
 import LayoutWrapper from "./LayoutWrapper/LayoutWrapper";
+import SidebarSessionInfo from "./SidebarSessionInfo/SidebarSessionInfo";
 
 export {
   Input,
@@ -29,4 +30,5 @@ export {
   Loader,
   LoaderContainer,
   LayoutWrapper,
+  SidebarSessionInfo,
 };

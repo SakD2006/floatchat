@@ -23,11 +23,42 @@ export const db = new Pool({
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
+  // Add retry configuration
+  keepAlive: true,
+  keepAliveInitialDelayMillis: 10000,
 });
 
-db.connect()
-  .then(async () => {
-    console.log("✅ Connected to PostgreSQL");
+// Add error handlers for the pool
+db.on("error", (err) => {
+  console.error("❌ Unexpected error on idle client", err);
+  // Don't exit the process, just log the error
+});
+
+db.on("connect", (client) => {
+  console.log("🔗 New client connected to PostgreSQL");
+
+  // Handle client errors
+  client.on("error", (err) => {
+    console.error("❌ PostgreSQL client error:", err);
+  });
+});
+
+db.on("acquire", () => {
+  console.log("📥 Client acquired from pool");
+});
+
+db.on("release", (err) => {
+  if (err) {
+    console.error("❌ Error releasing client back to pool:", err);
+  } else {
+    console.log("📤 Client released back to pool");
+  }
+});
+
+// Function to initialize database tables
+async function initializeDatabase() {
+  try {
+    console.log("🔄 Initializing database tables...");
 
     // Create users table
     await db.query(`
@@ -66,6 +97,58 @@ db.connect()
     `);
 
     console.log("✅ Ensured session table exists");
+    console.log("✅ Database initialization completed");
+  } catch (error) {
+    console.error("❌ Database initialization failed:", error);
+    throw error;
+  }
+}
+
+// Database query wrapper with error handling
+export async function safeQuery(text: string, params?: any[]) {
+  const maxRetries = 3;
+  let lastError;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await db.query(text, params);
+    } catch (error: any) {
+      lastError = error;
+      console.error(
+        `❌ Database query attempt ${attempt} failed:`,
+        error.message
+      );
+
+      // If it's a connection error, wait before retry
+      if (
+        error.code === "ECONNRESET" ||
+        error.code === "ENOTFOUND" ||
+        error.message.includes("Connection terminated")
+      ) {
+        if (attempt < maxRetries) {
+          const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // Exponential backoff, max 5s
+          console.log(`⏳ Retrying in ${delay}ms...`);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          continue;
+        }
+      }
+
+      // If it's not a connection error or we've exhausted retries, throw
+      throw error;
+    }
+  }
+
+  throw lastError;
+}
+
+// Test database connection and initialize tables
+db.connect()
+  .then(async (client) => {
+    console.log("✅ Connected to PostgreSQL");
+    client.release(); // Release the test connection
+
+    // Initialize database tables
+    await initializeDatabase();
   })
   .catch((err) => {
     console.error("❌ PostgreSQL connection error:", err);
@@ -195,8 +278,30 @@ app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({ message: "Welcome to FloatChat API!", status: "ok" });
 });
 
-app.get("/health", (_req: Request, res: Response) => {
-  res.status(200).json({ status: "ok", timestamp: new Date() });
+app.get("/health", async (_req: Request, res: Response) => {
+  const health = {
+    status: "ok",
+    timestamp: new Date(),
+    services: {
+      database: "unknown",
+      api: "ok",
+    },
+  };
+
+  try {
+    // Test database connectivity
+    const client = await db.connect();
+    await client.query("SELECT 1");
+    client.release();
+    health.services.database = "ok";
+  } catch (error) {
+    console.error("Health check database error:", error);
+    health.services.database = "error";
+    health.status = "degraded";
+  }
+
+  const statusCode = health.status === "ok" ? 200 : 503;
+  res.status(statusCode).json(health);
 });
 
 app.get("/api/csrf-token", csrfProtection, (req: Request, res: Response) => {
@@ -219,6 +324,45 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 // --- Start server ---
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
+});
+
+// --- Graceful shutdown handling ---
+const gracefulShutdown = (signal: string) => {
+  console.log(`\n🛑 Received ${signal}. Shutting down gracefully...`);
+
+  server.close(() => {
+    console.log("🔄 HTTP server closed.");
+
+    // Close database connections
+    db.end(() => {
+      console.log("📦 PostgreSQL pool has ended.");
+      process.exit(0);
+    });
+  });
+
+  // Force close after 30 seconds
+  setTimeout(() => {
+    console.error(
+      "❌ Could not close connections in time, forcefully shutting down"
+    );
+    process.exit(1);
+  }, 30000);
+};
+
+// Listen for termination signals
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+
+// Handle uncaught exceptions
+process.on("uncaughtException", (error) => {
+  console.error("❌ Uncaught Exception:", error);
+  gracefulShutdown("uncaughtException");
+});
+
+// Handle unhandled promise rejections
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("❌ Unhandled Rejection at:", promise, "reason:", reason);
+  gracefulShutdown("unhandledRejection");
 });

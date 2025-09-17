@@ -22,6 +22,7 @@ interface ChatContextType {
   isLoading: boolean;
   error: string | null;
   sessionId: string;
+  sessionStartTime: Date;
   sendMessage: (content: string) => Promise<void>;
   retryLastMessage: () => Promise<void>;
   clearMessages: () => void;
@@ -35,6 +36,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionId] = useState(() => generateSessionId());
+  const [sessionStartTime] = useState(() => new Date());
   const [lastUserMessage, setLastUserMessage] = useState<string>("");
   const { isAuthenticated } = useAuth();
 
@@ -205,6 +207,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     isLoading,
     error,
     sessionId,
+    sessionStartTime,
     sendMessage,
     retryLastMessage,
     clearMessages,
