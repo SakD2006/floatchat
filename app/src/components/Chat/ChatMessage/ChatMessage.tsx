@@ -3,6 +3,7 @@
 import React from "react";
 import { ChatMessage } from "@/utils/api";
 import { BiUser, BiBot } from "react-icons/bi";
+import DataVisualization from "../DataVisualization/DataVisualization";
 
 interface ChatMessageProps {
   message: ChatMessage;
@@ -49,17 +50,9 @@ export default function ChatMessageComponent({ message }: ChatMessageProps) {
             {message.content}
           </div>
 
-          {/* Data visualization placeholder */}
+          {/* Data visualization */}
           {message.data && message.data.length > 0 && (
-            <div className="mt-3 p-3 bg-black/20 rounded-lg">
-              <div className="text-xs text-white/70 mb-2">
-                Data ({message.data.length} records)
-              </div>
-              <div className="text-xs text-white/50">
-                📊 Data visualization will be rendered here
-              </div>
-              {/* TODO: Implement data visualization component */}
-            </div>
+            <DataVisualization data={message.data} />
           )}
 
           <div

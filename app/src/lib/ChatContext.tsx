@@ -83,17 +83,36 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       } catch (err) {
         console.error("[Chat] Failed to send message:", err);
 
+        // Determine specific error message
+        let errorContent =
+          "Sorry, I'm having trouble responding right now. Please try again later.";
+        let errorDetail = "Failed to send message. Please try again.";
+
+        if (err instanceof Error) {
+          if (
+            err.message.includes("Network Error") ||
+            err.message.includes("ERR_NETWORK")
+          ) {
+            errorContent =
+              "Unable to connect to the AI service. Please check if the AI server is running.";
+            errorDetail = "Network error: AI service unavailable.";
+          } else if (err.message.includes("timeout")) {
+            errorContent =
+              "The request timed out. The AI might be processing a complex query.";
+            errorDetail = "Request timeout. Please try again.";
+          }
+        }
+
         // Add error message
         const errorMessage: ChatMessage = {
           id: generateMessageId(),
-          content:
-            "Sorry, I'm having trouble responding right now. Please try again later.",
+          content: errorContent,
           role: "assistant",
           timestamp: new Date(),
         };
         addMessage(errorMessage);
 
-        setError("Failed to send message. Please try again.");
+        setError(errorDetail);
       } finally {
         setIsLoading(false);
       }

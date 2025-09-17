@@ -21,3 +21,5 @@ test_groq.py
 
 # Docker cache (optional)
 .docker/
+
+data/*

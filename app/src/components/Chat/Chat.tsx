@@ -3,6 +3,7 @@
 import { SubHeading } from "@/components/ui";
 import ChatInput from "./ChatInput/ChatInput";
 import ChatMessages from "./ChatMessages/ChatMessages";
+import ConnectionStatus from "./ConnectionStatus/ConnectionStatus";
 import { useAuth } from "@/lib/AuthContext";
 import { useChat } from "@/lib/ChatContext";
 
@@ -55,7 +56,10 @@ export default function Chat() {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <SubHeading text={getGreeting()} />
+        <div>
+          <SubHeading text={getGreeting()} />
+          <ConnectionStatus className="mt-1" />
+        </div>
         <button
           onClick={handleClearChat}
           className="

@@ -59,6 +59,7 @@ export interface ChatMessage {
   role: "user" | "assistant";
   timestamp: Date;
   data?: Record<string, unknown>[];
+  isLoading?: boolean;
 }
 
 export interface ChatRequest {
