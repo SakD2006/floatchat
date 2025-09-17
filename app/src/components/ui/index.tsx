@@ -10,6 +10,8 @@ import useNotification, {
 } from "./Notification/Notification";
 import Card from "./Card/Card";
 import Line from "./Line/Line";
+import Loader from "./Loader/Loader";
+import LoaderContainer from "./Loader/Loader";
 
 export {
   Input,
@@ -23,4 +25,6 @@ export {
   Line,
   useNotification,
   NotificationProvider,
+  Loader,
+  LoaderContainer,
 };

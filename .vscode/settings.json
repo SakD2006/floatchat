@@ -26,6 +26,7 @@
     "libpq",
     "Millis",
     "mydb",
+    "mynaui",
     "mypassword",
     "myuser",
     "OIDS",

@@ -9,9 +9,17 @@ import React, {
 } from "react";
 import { api } from "@/utils/api";
 
+type User = {
+  email: string;
+  name?: string;
+  id: string;
+};
+
 type AuthContextType = {
   isAuthenticated: boolean;
+  user: User | null;
   setAuthenticated: (auth: boolean) => void;
+  setUser: (user: User | null) => void;
   logout: () => Promise<void>;
   refreshAuth: () => Promise<boolean>;
 };
@@ -20,11 +28,13 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   const logout = async () => {
     try {
       await api.post("/api/auth/logout", {}, { withCredentials: true });
       setAuthenticated(false);
+      setUser(null);
       // Clear any stored state
       if (typeof window !== "undefined") {
         window.location.href = "/";
@@ -33,6 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Logout error:", err);
       // Force logout on frontend even if backend fails
       setAuthenticated(false);
+      setUser(null);
       if (typeof window !== "undefined") {
         window.location.href = "/";
       }
@@ -63,10 +74,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (res.data?.user) {
         setAuthenticated(true);
+        setUser(res.data.user);
         console.log("[AUTH_CONTEXT] User authenticated:", res.data.user.email);
         return true;
       } else {
         setAuthenticated(false);
+        setUser(null);
         console.log("[AUTH_CONTEXT] No user data in response");
         return false;
       }
@@ -78,6 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         error.response?.data
       );
       setAuthenticated(false);
+      setUser(null);
       return false;
     }
   };
@@ -100,7 +114,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, setAuthenticated, logout, refreshAuth }}
+      value={{
+        isAuthenticated,
+        user,
+        setAuthenticated,
+        setUser,
+        logout,
+        refreshAuth,
+      }}
     >
       {children}
     </AuthContext.Provider>
