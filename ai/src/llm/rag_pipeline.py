@@ -24,7 +24,7 @@ from pydantic import BaseModel, Field
 llm = ChatGroq(
     temperature=0,
     groq_api_key=settings.GROQ_API_KEY,
-    model_name="llama-3.3-70b-versatile" # NOTE: Ensure this is an active model in your Groq console
+    model_name="llama-3.1-8b-instant" # NOTE: Ensure this is an active model in your Groq console
 )
 
 # Initialize the Embedding Model to use a local, open-source model
