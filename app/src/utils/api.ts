@@ -20,7 +20,7 @@ const api = axios.create({
 const ai = axios.create({
   baseURL: aiURL,
   withCredentials: true,
-  timeout: 10000,
+  timeout: 120000, // 2 minutes for AI processing
   headers: {
     "Content-Type": "application/json",
   },

@@ -53,8 +53,8 @@ export default function ChatInput({
             !isAuthenticated
               ? "Please sign in to start chatting..."
               : isLoading
-              ? "Sending message..."
-              : "How can we help today..."
+              ? "AI is processing your request..."
+              : "Ask me about oceanographic data or marine research..."
           }
           value={message}
           onChange={(e) => setMessage(e.target.value)}
