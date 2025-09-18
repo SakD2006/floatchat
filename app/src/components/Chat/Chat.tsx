@@ -33,23 +33,23 @@ export default function Chat() {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex flex-col h-full">
-        <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col h-full p-4 sm:p-6">
+        <div className="flex items-center justify-between mb-4 sm:mb-6 flex-shrink-0">
           <SubHeading text={getGreeting()} />
         </div>
 
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center text-white/70 max-w-md">
-            <div className="text-lg font-light mb-4">
+        <div className="flex-1 flex items-center justify-center min-h-0">
+          <div className="text-center text-white/70 max-w-md px-4">
+            <div className="text-lg sm:text-xl font-light mb-4">
               Please sign in to start chatting with FloatChat AI
             </div>
-            <div className="text-sm text-white/50">
+            <div className="text-sm sm:text-base text-white/50">
               Get insights from oceanographic data and marine research
             </div>
           </div>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-4 sm:mt-6 flex-shrink-0">
           <ChatInput />
         </div>
       </div>
@@ -57,10 +57,10 @@ export default function Chat() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full p-4 sm:p-6">
       {/* Header - Show greeting only if no messages exist */}
       {messages.length === 0 ? (
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
               <SubHeading text={getGreeting()} />
@@ -108,7 +108,7 @@ export default function Chat() {
         </div>
       ) : (
         // Compact header when messages exist - just the action buttons
-        <div className="mb-4">
+        <div className="mb-4 flex-shrink-0">
           <div className="flex items-center justify-end gap-3">
             <button
               onClick={() => setShowSessionInfo(!showSessionInfo)}
@@ -151,12 +151,12 @@ export default function Chat() {
       )}
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden min-h-0">
         <ChatMessages />
       </div>
 
       {/* Input Area */}
-      <div className="mt-6">
+      <div className="mt-4 sm:mt-6 flex-shrink-0">
         <ChatInput />
       </div>
     </div>

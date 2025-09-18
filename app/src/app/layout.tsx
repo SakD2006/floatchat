@@ -58,8 +58,8 @@ export default function RootLayout({
                 </div>
                 <div style={{ position: "relative", zIndex: 1 }}>
                   <LayoutWrapper>{children}</LayoutWrapper>
+                  <Footer />
                 </div>
-                <Footer />
               </body>
             </html>
           </SidebarProvider>

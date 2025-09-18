@@ -16,16 +16,18 @@ export default function ChatMessages() {
   }, [messages]);
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
+    <div className="h-full overflow-y-auto px-2 py-4 space-y-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
       {/* Error message */}
       {error && <ErrorMessage error={error} />}
 
       {/* Messages */}
       {messages.length === 0 && !isLoading && (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center text-white/50 max-w-md">
-            <div className="text-lg font-light mb-2">Welcome to FloatChat!</div>
-            <div className="text-sm">
+        <div className="flex-1 flex items-center justify-center min-h-[200px]">
+          <div className="text-center text-white/50 max-w-md px-4">
+            <div className="text-lg sm:text-xl font-light mb-2">
+              Welcome to FloatChat!
+            </div>
+            <div className="text-sm sm:text-base">
               Ask me anything about oceanographic data, marine research, or get
               insights from our ARGO float database.
             </div>

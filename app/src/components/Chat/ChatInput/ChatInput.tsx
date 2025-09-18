@@ -36,15 +36,16 @@ export default function ChatInput({
   };
 
   return (
-    <div className="relative w-full flex justify-center px-4">
+    <div className="relative w-full flex justify-center">
       <div
         className="
           flex items-center justify-between
-          w-full max-w-5xl
+          w-full max-w-4xl
           bg-[#2B2B2B] border-2 border-white
-          shadow-[8px_8px_0px_#00AC31,16px_16px_0px_#1FF4FF]
+          shadow-[6px_6px_0px_#00AC31,12px_12px_0px_#1FF4FF]
+          sm:shadow-[8px_8px_0px_#00AC31,16px_16px_0px_#1FF4FF]
           rounded-2xl
-          p-3
+          p-3 sm:p-4
         "
       >
         <input
@@ -63,7 +64,7 @@ export default function ChatInput({
           className="
             flex-1 bg-transparent outline-none
             placeholder-white/70 text-white
-            text-lg font-light
+            text-sm sm:text-lg font-light
             disabled:opacity-50 disabled:cursor-not-allowed
           "
         />

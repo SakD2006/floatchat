@@ -16,7 +16,7 @@ export default function ErrorMessage({ error }: ErrorMessageProps) {
   };
 
   return (
-    <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 text-red-100 text-sm space-y-3">
+    <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 sm:p-4 text-red-100 text-xs sm:text-sm space-y-3">
       <div className="flex items-start space-x-2">
         <span className="text-red-400">⚠️</span>
         <div className="flex-1">
@@ -24,7 +24,7 @@ export default function ErrorMessage({ error }: ErrorMessageProps) {
         </div>
       </div>
 
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-2 sm:space-x-3">
         <button
           onClick={handleRetry}
           disabled={isLoading}

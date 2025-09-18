@@ -4,6 +4,7 @@ import React from "react";
 import { ChatMessage } from "@/utils/api";
 import { BiUser, BiBot } from "react-icons/bi";
 import DataVisualization from "../DataVisualization/DataVisualization";
+import MessageFormatter from "../MessageFormatter/MessageFormatter";
 
 interface ChatMessageProps {
   message: ChatMessage;
@@ -21,24 +22,28 @@ export default function ChatMessageComponent({ message }: ChatMessageProps) {
       className={`flex w-full mb-4 ${isUser ? "justify-end" : "justify-start"}`}
     >
       <div
-        className={`flex max-w-[80%] ${
+        className={`flex max-w-[85%] sm:max-w-[80%] ${
           isUser ? "flex-row-reverse" : "flex-row"
-        } gap-3`}
+        } gap-2 sm:gap-3`}
       >
         {/* Avatar */}
         <div
           className={`
-            flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center
+            flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center
             ${isUser ? "bg-blue-500 text-white" : "bg-green-500 text-white"}
           `}
         >
-          {isUser ? <BiUser size={16} /> : <BiBot size={16} />}
+          {isUser ? (
+            <BiUser size={14} className="sm:w-4 sm:h-4" />
+          ) : (
+            <BiBot size={14} className="sm:w-4 sm:h-4" />
+          )}
         </div>
 
         {/* Message Content */}
         <div
           className={`
-            rounded-2xl px-4 py-3 shadow-md
+            rounded-2xl px-3 py-2 sm:px-4 sm:py-3 shadow-md
             ${
               isUser
                 ? "bg-blue-500 text-white"
@@ -46,8 +51,8 @@ export default function ChatMessageComponent({ message }: ChatMessageProps) {
             }
           `}
         >
-          <div className="text-sm leading-relaxed whitespace-pre-wrap">
-            {message.content}
+          <div className="text-sm leading-relaxed">
+            <MessageFormatter content={message.content} isUser={isUser} />
           </div>
 
           {/* Data visualization */}

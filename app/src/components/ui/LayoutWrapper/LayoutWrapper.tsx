@@ -19,29 +19,33 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
 
     checkMobile();
     window.addEventListener("resize", checkMobile);
-
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   return (
     <div className="flex min-h-screen">
+      {/* Sidebar */}
       <Sidebar />
 
-      {/* Overlay for mobile */}
-      {mobileOpen && (
+      {/* Overlay (only on mobile when open) */}
+      {isMobile && mobileOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/40 md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
-      {/* Main content area */}
+      {/* Main Content */}
       <div
         className={`flex-1 transition-all duration-300 ease-in-out ${
-          !isMobile ? (collapsed ? "ml-20" : "ml-64") : ""
+          !isMobile
+            ? collapsed
+              ? "ml-16 sm:ml-20"
+              : "ml-64 sm:ml-72 lg:ml-80"
+            : "mt-[60px]"
         }`}
       >
-        <main className="flex flex-col gap-[32px] items-center sm:items-start p-4">
+        <main className="flex flex-col gap-2 sm:gap-4 lg:gap-6 p-2 sm:p-3 lg:p-4 min-h-screen">
           {children}
         </main>
       </div>
