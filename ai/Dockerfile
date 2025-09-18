@@ -1,5 +1,5 @@
 # --- Stage 1: Base Dependencies Builder ---
-FROM python:3.13-slim AS base
+FROM python:3.11-slim AS base
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -21,14 +21,14 @@ WORKDIR /build
 # Copy only requirements.txt first for caching
 COPY requirements.txt .
 
-# Build wheels using pip cache mount (for GitHub Actions)
+# Build wheels using pip cache mount (GitHub Actions)
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip wheel --no-cache-dir --no-deps --wheel-dir /build/wheels -r requirements.txt \
     --index-url https://mirrors.piconets.webwerks.in/pypi/web/simple \
     --extra-index-url https://pypi.org/simple
 
 # --- Stage 3: Runtime Image ---
-FROM python:3.13-slim AS runtime
+FROM python:3.11-slim AS runtime
 
 # Install runtime system dependencies only
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -44,8 +44,9 @@ WORKDIR /app
 COPY --from=builder /build/wheels /tmp/wheels
 COPY --from=builder /build/requirements.txt /tmp/requirements.txt
 
-# Install Python dependencies from wheels
-RUN pip install --no-cache-dir --no-index --find-links /tmp/wheels -r /tmp/requirements.txt \
+# Install Python dependencies
+# Use wheels first, fallback to PyPI for any missing packages like hf-xet
+RUN pip install --no-cache-dir --find-links /tmp/wheels -r /tmp/requirements.txt \
     && rm -rf /tmp/wheels /tmp/requirements.txt
 
 # Copy application code in layers for caching efficiency
