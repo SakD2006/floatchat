@@ -1,8 +1,7 @@
 # --- Stage 1: Base Dependencies Builder ---
-# Minimal Python image with build tools
 FROM python:3.13-slim AS base
 
-# Install system dependencies in a single layer
+# Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
@@ -11,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip & install wheel/setuptools
+# Upgrade pip and install wheel/setuptools
 RUN pip install --no-cache-dir --upgrade pip wheel setuptools
 
 # --- Stage 2: Dependencies Builder ---
@@ -19,11 +18,10 @@ FROM base AS builder
 
 WORKDIR /build
 
-# Copy only requirements to leverage Docker cache
+# Copy only requirements.txt first for caching
 COPY requirements.txt .
 
-# Use pip cache mount for faster builds in GitHub Actions
-# This requires --mount=type=cache in GitHub Actions build command
+# Build wheels using pip cache mount (for GitHub Actions)
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip wheel --no-cache-dir --no-deps --wheel-dir /build/wheels -r requirements.txt \
     --index-url https://mirrors.piconets.webwerks.in/pypi/web/simple \
@@ -42,14 +40,15 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 
 WORKDIR /app
 
-# Copy wheels from builder
+# Copy pre-built wheels and requirements from builder
 COPY --from=builder /build/wheels /tmp/wheels
+COPY --from=builder /build/requirements.txt /tmp/requirements.txt
 
-# Install Python dependencies from wheels for speed
-RUN pip install --no-cache-dir --no-index --find-links /tmp/wheels -r /build/requirements.txt \
-    && rm -rf /tmp/wheels
+# Install Python dependencies from wheels
+RUN pip install --no-cache-dir --no-index --find-links /tmp/wheels -r /tmp/requirements.txt \
+    && rm -rf /tmp/wheels /tmp/requirements.txt
 
-# Copy application code in layers to maximize cache
+# Copy application code in layers for caching efficiency
 COPY --chown=appuser:appuser ./src/__init__.py ./src/
 COPY --chown=appuser:appuser ./src/core/ ./src/core/
 COPY --chown=appuser:appuser ./src/schemas/ ./src/schemas/
@@ -68,5 +67,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/ || exit 1
 
-# Run Uvicorn with production settings
+# Run Uvicorn in production mode
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1", "--access-log", "--log-level", "info"]
