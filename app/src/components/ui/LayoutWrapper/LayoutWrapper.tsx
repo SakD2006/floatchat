@@ -9,7 +9,7 @@ interface LayoutWrapperProps {
 }
 
 export default function LayoutWrapper({ children }: LayoutWrapperProps) {
-  const { collapsed, mobileOpen, setMobileOpen } = useSidebar();
+  const { collapsed } = useSidebar();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -27,25 +27,21 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
       {/* Sidebar */}
       <Sidebar />
 
-      {/* Overlay (only on mobile when open) */}
-      {isMobile && mobileOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/40 md:hidden"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-
       {/* Main Content */}
       <div
         className={`flex-1 transition-all duration-300 ease-in-out ${
           !isMobile
             ? collapsed
-              ? "ml-16 sm:ml-20"
-              : "ml-64 sm:ml-72 lg:ml-80"
-            : "mt-[60px]"
+              ? "ml-16 lg:ml-20"
+              : "ml-64 lg:ml-80"
+            : "mb-20" // Bottom margin for mobile bottombar
         }`}
       >
-        <main className="flex flex-col gap-2 sm:gap-4 lg:gap-6 p-2 sm:p-3 lg:p-4 min-h-screen">
+        <main
+          className={`flex flex-col gap-2 sm:gap-4 lg:gap-6 p-2 sm:p-3 lg:p-4 min-h-screen ${
+            isMobile ? "pb-4" : "" // Extra bottom padding on mobile
+          }`}
+        >
           {children}
         </main>
       </div>
