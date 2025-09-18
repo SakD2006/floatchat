@@ -1,30 +1,83 @@
 # Git
 .git
 .gitignore
+.gitattributes
 
 # Docker
-Dockerfile
-docker-compose.yml
+Dockerfile*
+docker-compose*.yml
 .dockerignore
 
-# Python virtual environment
-venv/
-.venv/
-
-# Python cache
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
 # IDE and OS files
 .vscode/
 .idea/
-*.DS_Store
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
 
-# Environment variables - IMPORTANT
-.env
+# Testing
+.tox/
+.nox/
+.coverage
+.pytest_cache/
+cover/
+*.cover
+*.py,cover
+.hypothesis/
+htmlcov/
+tests/
 
-# Test scripts
-test_groq.py
+# Documentation
+docs/
+*.md
+LICENSE
 
-# Local data - we will mount this as a volume instead
+# Scripts and utilities
+scripts/
+*.sh
+*.bat
+
+# Local data and logs - mount as volumes instead
 data/
+logs/
+*.log
+
+# Development files
+.env.example
+example.env
+requirements-dev.txt
